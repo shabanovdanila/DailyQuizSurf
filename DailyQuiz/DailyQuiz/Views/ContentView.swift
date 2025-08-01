@@ -33,27 +33,38 @@ struct ContentView: View {
         static let buttonCornerRadius: CGFloat = 16
         static let buttonTopPadding: CGFloat = 40
         static let buttonBottomPadding: CGFloat = 32
+        
+        //Loader
+        static let loaderIconSize: CGFloat = 72
+        static let loaderTopPadding: CGFloat = 120
     }
+    
+    //MARK: - Properties
+    
+    @State private var isLoading: Bool = false
     
     //MARK: - body
     var body: some View {
         ZStack {
             Color.dQpurple.ignoresSafeArea()
-            
             VStack(spacing: 0) {
-                HistoryButton()
-                    .padding(.top, Constants.topPadding)
-                
+                if !isLoading {
+                    HistoryButton()
+                        .padding(.top, Constants.topPadding)
+                }
                 Image("logo_dq")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .foregroundStyle(.dQwhite)
-                    .padding(.top, Constants.logoTopPadding)
+                    .padding(.top, isLoading ? 200 : Constants.logoTopPadding)
                     .padding(.horizontal, Constants.logoHorizontalPadding)
-                
-                WelcomeView()
-                    .padding(.top, Constants.welcomeViewTopPadding)
-                
+                if isLoading {
+                    Loader()
+                        .padding(.top, Constants.loaderTopPadding)
+                } else {
+                    WelcomeView()
+                        .padding(.top, Constants.welcomeViewTopPadding)
+                }
                 Spacer(minLength: Constants.spacerMinLength)
             }
         }
@@ -119,6 +130,30 @@ struct ContentView: View {
                 cornerRadius: Constants.welcomeViewCornerRadius
             ))
             .padding(.horizontal, Constants.welcomeViewHorizontalPadding)
+        }
+    }
+    //MARK: - Loader
+    private struct Loader: View {
+        @State private var isRotating = false
+        
+        var body: some View {
+            Image("loader_icon")
+                .resizable()
+                .scaledToFit()
+                .frame(
+                    width: Constants.loaderIconSize,
+                    height: Constants.loaderIconSize
+                )
+                .foregroundStyle(.dQwhite)
+                .rotationEffect(.degrees(isRotating ? 360 : 0))
+                .animation(
+                    .linear(duration: 3)
+                    .repeatForever(autoreverses: false),
+                    value: isRotating
+                )
+                .onAppear {
+                    isRotating = true
+                }
         }
     }
 }
