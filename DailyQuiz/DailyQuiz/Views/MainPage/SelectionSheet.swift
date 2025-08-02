@@ -25,43 +25,45 @@ struct SelectionSheet: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(AppFontInter.bold.size(24))
-                .foregroundStyle(.dQdarkPurple)
-                .padding(.top, Constants.titleTopPadding)
-                .padding(.horizontal, Constants.titleHorizontalPadding)
-            
-            LazyVStack(alignment: .leading, spacing: Constants.linesTopPadding) {
-                ForEach(items, id: \.self) { item in
-                    Button(action: {
-                        selectedItem = item
-                        dismiss()
-                    }) {
-                        HStack(spacing: 0) {
-                            if (selectedItem == item) {
-                                Text(item)
-                                    .font(AppFontInter.bold.size(16))
-                                    .foregroundStyle(.dQdarkPurple)
-                                Spacer()
-                                Image("check_mark_icon")
-                                    .frame(width: Constants.checkmarkSize, height: Constants.checkmarkSize)
-                                    .foregroundColor(.dQpurple)
-                            } else {
-                                Text(item)
-                                    .font(AppFontInter.regular.size(16))
-                                    .foregroundStyle(.dQdarkPurple)
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(AppFontInter.bold.size(24))
+                    .foregroundStyle(.dQdarkPurple)
+                    .padding(.top, Constants.titleTopPadding)
+                    .padding(.horizontal, Constants.titleHorizontalPadding)
+                LazyVStack(alignment: .leading, spacing: Constants.linesTopPadding) {
+                    ForEach(items, id: \.self) { item in
+                        Button(action: {
+                            selectedItem = item
+                            dismiss()
+                        }) {
+                            HStack(spacing: 0) {
+                                if (selectedItem == item) {
+                                    Text(item)
+                                        .font(AppFontInter.bold.size(16))
+                                        .foregroundStyle(.dQdarkPurple)
+                                    Spacer()
+                                    Image("check_mark_icon")
+                                        .frame(width: Constants.checkmarkSize, height: Constants.checkmarkSize)
+                                        .foregroundColor(.dQpurple)
+                                } else {
+                                    Text(item)
+                                        .font(AppFontInter.regular.size(16))
+                                        .foregroundStyle(.dQdarkPurple)
+                                }
                             }
+                            .padding(.horizontal, Constants.titleHorizontalPadding)
                         }
-                        .padding(.horizontal, Constants.titleHorizontalPadding)
                     }
+                    Spacer().frame(height: 10)
                 }
+                .padding(.top, Constants.firstLineTopPadding)
             }
-            .padding(.top, Constants.firstLineTopPadding)
+            .background(Color.dQwhite)
+            .presentationDetents([.height(calculateSheetHeight())])
+            .presentationDragIndicator(.visible)
         }
-        .background(Color.dQwhite)
-        .presentationDetents([.height(calculateSheetHeight())])
-        .presentationDragIndicator(.visible)
     }
     
     private func calculateSheetHeight() -> CGFloat {
