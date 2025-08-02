@@ -67,7 +67,7 @@ struct MainPageView: View {
         ZStack {
             Color.dQpurple.ignoresSafeArea()
             VStack(spacing: 0) {
-                if !isLoading && contentState == .welcome {
+                if contentState == .welcome {
                     HistoryButton()
                         .padding(.top, Constants.topPadding)
                         .transition(.asymmetric(
@@ -96,7 +96,7 @@ struct MainPageView: View {
                             .padding(.top, Constants.welcomeViewTopPadding)
                             .transition(.asymmetric(
                                 insertion: .move(edge: .bottom).animation(.easeOut(duration: 0.5)),
-                                removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25)) 
+                                removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25))
                             ))
                     case .filters:
                         FiltersView(backAction: backToWelcome)

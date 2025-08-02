@@ -18,11 +18,12 @@ struct FiltersView: View {
         static let categoryTopPadding: CGFloat = 40
         static let diffTopPadding: CGFloat = 16
         static let categoryHorizontalPadding: CGFloat = 30
-        static let nextButtonTopPadding: CGFloat = 79
+        static let nextButtonTopPadding: CGFloat = 39
         static let nextButtonHorizontalPadding: CGFloat = 40
         static let nextButtonBottomPadding: CGFloat = 32
         static let nextButtonTextVerticalPadding: CGFloat = 15.5
-        static let nextButtonTextHorizontalPadding: CGFloat = 111
+        static let nextButtonTextDisabledHorizontalPadding: CGFloat = 111
+        static let nextButtonTextEnabledHorizontalPadding: CGFloat = 51.5
         static let rightArrowIconSize: CGFloat = 24
     }
     //@StateObject private let viewModel:
@@ -30,19 +31,51 @@ struct FiltersView: View {
     //MARK: - Properties
     let backAction: () -> Void
     
+    @State private var selectedCategory: String?
+    @State private var selectedDifficulty: String?
+    @State private var showingCategorySheet = false
+    @State private var showingDifficultySheet = false
     
+    let categories = ["История", "Наука", "Искусство", "Спорт", "Кино"]
+    let difficulties = ["Низкая", "Средняя", "Высокая"]
+    
+    //MARK: - body
     var body: some View {
         VStack(spacing: 0) {
-            FiltersCard(backAction: backAction, categoryAction: {}, diffAction: {}, nextButtonAction: {})
+            FiltersCard(
+                backAction: backAction,
+                categoryAction: { showingCategorySheet = true },
+                diffAction: { showingDifficultySheet = true },
+                nextButtonAction: {},
+                selectedCategory: selectedCategory,
+                selectedDifficulty: selectedDifficulty
+            )
+        }
+        .sheet(isPresented: $showingCategorySheet) {
+            SelectionSheet(
+                title: "Категория",
+                items: categories,
+                selectedItem: $selectedCategory
+            )
+        }
+        .sheet(isPresented: $showingDifficultySheet) {
+            SelectionSheet(
+                title: "Сложность",
+                items: difficulties,
+                selectedItem: $selectedDifficulty
+            )
         }
     }
     
+    //MARK: - Filters Card
     private struct FiltersCard: View {
         
         let backAction: () -> Void
         let categoryAction: () -> Void
         let diffAction: () -> Void
         let nextButtonAction: () -> Void
+        let selectedCategory: String?
+        let selectedDifficulty: String?
         
         var body: some View {
             VStack(spacing: 0) {
@@ -55,20 +88,42 @@ struct FiltersView: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, Constants.titleTopPadding)
-                FilterButton(action: categoryAction, text: "Категория")
-                    .padding(.top, Constants.categoryTopPadding)
-                    .padding(.horizontal, Constants.categoryHorizontalPadding)
-                FilterButton(action: diffAction, text: "Сложность")
+                
+                VStack(spacing: 0) {
+                    FilterButton(
+                        action: categoryAction,
+                        text: "Категория",
+                        selectedValue: selectedCategory
+                    )
+                    FilterButton(
+                        action: diffAction,
+                        text: "Сложность",
+                        selectedValue: selectedDifficulty
+                    )
                     .padding(.top, Constants.diffTopPadding)
-                    .padding(.horizontal, Constants.categoryHorizontalPadding)
-                Button(action: nextButtonAction) {
-                    Text("ДАЛЕЕ")
-                        .font(AppFontInter.black.size(16))
-                        .foregroundStyle(.dQwhite)
-                        .padding(.horizontal, Constants.nextButtonTextHorizontalPadding)
-                        .padding(.vertical, Constants.nextButtonTextVerticalPadding)
                 }
-                .background(Color.dQgray)
+                .frame(height: 152)
+                .padding(.top, Constants.categoryTopPadding)
+                .padding(.horizontal, Constants.categoryHorizontalPadding)
+                
+                Button(action: nextButtonAction) {
+                    if (selectedCategory != nil && selectedDifficulty != nil) {
+                        Text("НАЧАТЬ ВИКТОРИНУ")
+                            .font(AppFontInter.black.size(16))
+                            .foregroundStyle(.dQwhite)
+                            .padding(.horizontal, Constants.nextButtonTextEnabledHorizontalPadding)
+                            .padding(.vertical, Constants.nextButtonTextVerticalPadding)
+                            .background(Color.dQpurple)
+                    } else {
+                        Text("ДАЛЕЕ")
+                            .font(AppFontInter.black.size(16))
+                            .foregroundStyle(.dQwhite)
+                            .padding(.horizontal, Constants.nextButtonTextDisabledHorizontalPadding)
+                            .padding(.vertical, Constants.nextButtonTextVerticalPadding)
+                            .background(Color.dQgray)
+                    }
+                }
+                .disabled(selectedCategory == nil || selectedDifficulty == nil)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .padding(.top, Constants.nextButtonTopPadding)
                 .padding(.bottom, Constants.nextButtonBottomPadding)
@@ -88,18 +143,29 @@ struct FiltersView: View {
     }
     
     private struct FilterButton: View {
-        
         let action: () -> Void
         let text: String
+        let selectedValue: String?
         
         var body: some View {
             Button(action: action) {
                 HStack(spacing: 0) {
-                    Text(text)
-                        .font(AppFontInter.bold.size(16))
-                        .foregroundStyle(.dQdarkPurple)
-                        .padding(.leading, 12)
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(text)
+                            .font(AppFontInter.bold.size(16))
+                            .foregroundStyle(.dQdarkPurple)
+                        
+                        if let selectedValue {
+                            Text(selectedValue)
+                                .font(AppFontInter.regular.size(14))
+                                .foregroundStyle(.black)
+                                .padding(.top, 8)
+                        }
+                    }
+                    .padding(.leading, 12)
+                    
                     Spacer()
+                    
                     Image("right_arrow")
                         .resizable()
                         .scaledToFit()
@@ -107,7 +173,7 @@ struct FiltersView: View {
                         .frame(width: Constants.rightArrowIconSize,
                                height: Constants.rightArrowIconSize)
                         .padding(.trailing, 12)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, selectedValue != nil ? 22 : 12)
                 }
                 .background(Color.dQgrayWhite)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
