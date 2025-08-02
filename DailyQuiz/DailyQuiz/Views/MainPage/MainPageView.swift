@@ -7,16 +7,33 @@
 
 import SwiftUI
 
-struct ContentView: View {
+private enum ContentState {
+    case welcome
+    case filters
+    case questions
+}
+
+struct MainPageView: View {
     
     // MARK: - Constants
     private enum Constants {
         // Layout
         static let topPadding: CGFloat = 46
+        
+        static let logoLargeSize: CGSize = CGSize(width: 300, height: 68)
+        static let logoSmallSize: CGSize = CGSize(width: 180, height: 40)
+        
         static let logoTopPadding: CGFloat = 114
         static let logoHorizontalPadding: CGFloat = 46
+        
+        static let logoSmallTopPadding: CGFloat = 35
+        static let logoSmallHorizontalPadding: CGFloat = 106
+        
         static let welcomeViewTopPadding: CGFloat = 40
         static let spacerMinLength: CGFloat = 20
+        
+        static let filterHorizontalPadding: CGFloat = 16
+        static let filterTopPadding: CGFloat = 52
         
         // History Button
         static let historyButtonCornerRadius: CGFloat = 24
@@ -42,33 +59,84 @@ struct ContentView: View {
     //MARK: - Properties
     
     @State private var isLoading: Bool = false
+    @State private var contentState: ContentState = .welcome
+    @State private var isLogoSmall = false
     
     //MARK: - body
     var body: some View {
         ZStack {
             Color.dQpurple.ignoresSafeArea()
             VStack(spacing: 0) {
-                if !isLoading {
+                if !isLoading && contentState == .welcome {
                     HistoryButton()
                         .padding(.top, Constants.topPadding)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .top),
+                            removal: .move(edge: .top).combined(with: .opacity)
+                        ))
                 }
                 Image("logo_dq")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .foregroundStyle(.dQwhite)
-                    .padding(.top, isLoading ? 200 : Constants.logoTopPadding)
-                    .padding(.horizontal, Constants.logoHorizontalPadding)
+                    .frame(
+                        width: isLogoSmall ? Constants.logoSmallSize.width : Constants.logoLargeSize.width,
+                        height: isLogoSmall ? Constants.logoSmallSize.height : Constants.logoLargeSize.height
+                    )
+                .padding(.top, isLogoSmall ? Constants.logoSmallTopPadding : Constants.logoTopPadding)
+                .animation(.smooth(duration: 0.5), value: isLogoSmall)
+                
                 if isLoading {
                     Loader()
                         .padding(.top, Constants.loaderTopPadding)
                 } else {
-                    WelcomeView()
-                        .padding(.top, Constants.welcomeViewTopPadding)
+                    switch contentState {
+                    case .welcome:
+                        WelcomeView(startQuiz: startQuiz)
+                            .padding(.top, Constants.welcomeViewTopPadding)
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .bottom).animation(.easeOut(duration: 0.5)),
+                                removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25)) 
+                            ))
+                    case .filters:
+                        FiltersView(backAction: backToWelcome)
+                            .padding(.horizontal, Constants.filterHorizontalPadding)
+                            .padding(.top, Constants.filterTopPadding)
+                            .transition(.move(edge: .trailing))
+                    case .questions:
+                        EmptyView()
+                    }
+                }
+                if isLoading {
+                    tryAgainText()
                 }
                 Spacer(minLength: Constants.spacerMinLength)
             }
         }
     }
+    
+    private func startQuiz() {
+        withAnimation {
+            isLogoSmall = true
+            contentState = .filters
+        }
+    }
+        
+    private func backToWelcome() {
+        withAnimation {
+            isLogoSmall = false
+            contentState = .welcome
+        }
+    }
+    //MARK: - Loader
+    @ViewBuilder
+    private func tryAgainText() -> some View {
+        Text("Ошибка! Попробуйте ещё раз")
+            .font(AppFontInter.bold.size(20))
+            .foregroundStyle(.dQwhite)
+            .padding(.top, 24)
+    }
+    
     //MARK: - HistoryButton
     private struct HistoryButton: View {
         var body: some View {
@@ -98,6 +166,8 @@ struct ContentView: View {
     }
     //MARK: - Welcome View
     private struct WelcomeView: View {
+        let startQuiz: () -> Void
+        
         var body: some View {
             VStack(spacing: 0) {
                 Text("Добро пожаловать в DailyQuiz!")
@@ -106,7 +176,7 @@ struct ContentView: View {
                     .foregroundStyle(.black)
                     .padding(.top, Constants.welcomeTitleTopPadding)
                 
-                Button(action: {}) {
+                Button(action: startQuiz) {
                     Text("НАЧАТЬ ВИКТОРИНУ")
                         .font(AppFontInter.black.size(16))
                         .foregroundStyle(.dQwhite)
@@ -159,5 +229,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    MainPageView()
 }
