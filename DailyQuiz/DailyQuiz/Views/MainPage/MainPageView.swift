@@ -64,7 +64,6 @@ struct MainPageView: View {
                             ))
                     case .filters:
                         FiltersView(backAction: backToWelcome, onStartQuiz: {
-                            print(12211212)
                             startQuizWithFilters()
                         }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
                         .padding(.horizontal, Constants.filterHorizontalPadding)
@@ -99,6 +98,7 @@ struct MainPageView: View {
                                 withAnimation {
                                     contentState = .welcome
                                     isLogoSmall = false
+                                    questionViewModel.resetQuiz()
                                 }
                             }
                         )
@@ -143,6 +143,7 @@ struct MainPageView: View {
               let category = TriviaCategory.category(byName: categoryName),
               let difficultyName = selectedDifficulty,
               let difficulty = QuestionDifficulty(rawValue: difficultyName.lowercased()) else { return }
+        questionViewModel.resetQuiz()
         Task {
             await questionViewModel.loadQuestions(category: category.id, difficulty: difficulty)
             withAnimation {
