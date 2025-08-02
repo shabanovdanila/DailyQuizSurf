@@ -30,9 +30,10 @@ struct FiltersView: View {
     
     //MARK: - Properties
     let backAction: () -> Void
+    let onStartQuiz: () -> Void
     
-    @State private var selectedCategory: String?
-    @State private var selectedDifficulty: String?
+    @Binding var selectedCategory: String?
+    @Binding var selectedDifficulty: String?
     @State private var showingCategorySheet = false
     @State private var showingDifficultySheet = false
     
@@ -46,7 +47,7 @@ struct FiltersView: View {
                 backAction: backAction,
                 categoryAction: { showingCategorySheet = true },
                 diffAction: { showingDifficultySheet = true },
-                nextButtonAction: {},
+                nextButtonAction: onStartQuiz,
                 selectedCategory: selectedCategory,
                 selectedDifficulty: selectedDifficulty
             )
@@ -106,7 +107,11 @@ struct FiltersView: View {
                 .padding(.top, Constants.categoryTopPadding)
                 .padding(.horizontal, Constants.categoryHorizontalPadding)
                 
-                Button(action: nextButtonAction) {
+                Button(action: {
+                    if selectedCategory != nil && selectedDifficulty != nil {
+                        nextButtonAction()
+                    }
+                }) {
                     if (selectedCategory != nil && selectedDifficulty != nil) {
                         Text("НАЧАТЬ ВИКТОРИНУ")
                             .font(AppFontInter.black.size(16))
@@ -181,7 +186,7 @@ struct FiltersView: View {
         }
     }
 }
-
-#Preview {
-    FiltersView(backAction: {})
-}
+//
+//#Preview {
+//    FiltersView(backAction: {})
+//}

@@ -9,7 +9,7 @@ import SwiftUI
 
 private enum Constants {
     //Timer
-    static let timerHorizontalPadding: CGFloat = 24
+    static let timerHorizontalPadding: CGFloat = 30
     static let timerTopPadding: CGFloat = 32
     
     //Question
@@ -43,44 +43,59 @@ struct QuestionView: View {
     @State private var showAnswerFeedback: Bool = false
     @State private var isCorrectAnswer: Bool = false
     @State private var needDisable: Bool = false
+    @State private var showTimeoutToast = false
     //MARK: - body
     var body: some View {
-        ZStack {
-            Color.dQpurple
-                .ignoresSafeArea()
+        VStack(spacing: 0) {
             VStack(spacing: 0) {
-                VStack(spacing: 0) {
-                    TimerView()
-                        .padding(.top, Constants.timerTopPadding)
-                        .padding(.horizontal, Constants.timerHorizontalPadding)
-                    questionText(num: numberOfQuestion, text: question.question)
-                    AnswersView(
-                        answers: question.answers,
-                        selectedAnswer: $selectedAnswer,
-                        showAnswerFeedback: showAnswerFeedback,
-                        isCorrectAnswer: isCorrectAnswer,
-                        correctAnswer: question.correctAnswer
-                    )
-                        .padding(.top, Constants.answerTopPadding)
-                        .padding(.horizontal, Constants.answerHorizontalPadding)
-                    
-                    NextButton(
-                        action: checkAnswerAndProceed,
-                        numberOfQuestion: numberOfQuestion,
-                        isAnswerSelected: selectedAnswer != nil,
-                        needDisable: needDisable
-                    )
-                        .padding(.top, Constants.nextTopPadding)
-                        .padding(.bottom, Constants.nextBottomPadding)
-                        .padding(.horizontal, Constants.nextHorizontalPadding)
-                }
-                .background(Color.dQwhite)
-                .clipShape(RoundedRectangle(cornerRadius: 46))
+                TimerView(onTimeout: {
+                    withAnimation {
+                        showTimeoutToast = true
+                    }
+                })
+                .padding(.top, Constants.timerTopPadding)
+                .padding(.horizontal, Constants.timerHorizontalPadding)
                 
-                bottomText()
-                    .padding(.top, Constants.bottomTextTopPadding)
+                questionText(num: numberOfQuestion, text: question.question)
+                    .padding(.top, Constants.questionTopPadding)
+                    .padding(.horizontal, Constants.questionHorizontalPadding)
+                
+                AnswersView(
+                    answers: question.answers,
+                    selectedAnswer: $selectedAnswer,
+                    showAnswerFeedback: showAnswerFeedback,
+                    isCorrectAnswer: isCorrectAnswer,
+                    correctAnswer: question.correctAnswer
+                )
+                .padding(.top, Constants.answerTopPadding)
+                .padding(.horizontal, Constants.answerHorizontalPadding)
+                
+                NextButton(
+                    action: checkAnswerAndProceed,
+                    numberOfQuestion: numberOfQuestion,
+                    isAnswerSelected: selectedAnswer != nil,
+                    needDisable: needDisable
+                )
+                .padding(.top, Constants.nextTopPadding)
+                .padding(.bottom, Constants.nextBottomPadding)
+                .padding(.horizontal, Constants.nextHorizontalPadding)
             }
-            .disabled(needDisable)
+            .background(Color.dQwhite)
+            .clipShape(RoundedRectangle(cornerRadius: 46))
+            
+            bottomText()
+                .padding(.top, Constants.bottomTextTopPadding)
+        }
+        .disabled(needDisable || showTimeoutToast)
+        if showTimeoutToast {
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+                .onTapGesture {}
+            ToastTimeIsUpView(action: {
+                showTimeoutToast = false
+            })
+            .transition(.scale.combined(with: .opacity))
+            .zIndex(1)
         }
     }
     
@@ -107,6 +122,7 @@ struct QuestionView: View {
             .foregroundStyle(.dQwhite)
     }
     private func checkAnswerAndProceed() {
+        guard !showTimeoutToast else { return }
         guard let selectedAnswer else { return }
         
         isCorrectAnswer = selectedAnswer == question.correctAnswer

@@ -15,6 +15,8 @@ struct TimerView: View {
     private let totalDuration: TimeInterval = 300
     private let timeRemaining = "05:00"
     
+    var onTimeout: (() -> Void)?
+    
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -34,7 +36,6 @@ struct TimerView: View {
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .frame(width: geometry.size.width, height: 8)
-                        .opacity(0.3)
                         .foregroundColor(.dQgray)
                     
                     Rectangle()
@@ -47,7 +48,6 @@ struct TimerView: View {
             }
             .frame(height: 8)
         }
-        .padding()
         .onReceive(timer) { _ in
             updateTimer()
         }
@@ -68,6 +68,7 @@ struct TimerView: View {
 
         if elapsed >= totalDuration {
             timer.upstream.connect().cancel()
+            onTimeout?()
         }
     }
 }

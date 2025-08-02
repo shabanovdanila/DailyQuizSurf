@@ -62,6 +62,9 @@ struct MainPageView: View {
     @State private var contentState: ContentState = .welcome
     @State private var isLogoSmall = false
     
+    @State private var selectedCategory: String?
+    @State private var selectedDifficulty: String?
+    
     //MARK: - body
     var body: some View {
         ZStack {
@@ -99,12 +102,31 @@ struct MainPageView: View {
                                 removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25))
                             ))
                     case .filters:
-                        FiltersView(backAction: backToWelcome)
+                        FiltersView(backAction: backToWelcome, onStartQuiz: {
+                            withAnimation {
+                                contentState = .questions
+                            }
+                        }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
                             .padding(.horizontal, Constants.filterHorizontalPadding)
                             .padding(.top, Constants.filterTopPadding)
                             .transition(.move(edge: .trailing))
                     case .questions:
-                        EmptyView()
+                        if let category = selectedCategory, let difficulty = selectedDifficulty {
+                            QuestionView(
+                                question: Question(
+                                    type: .multiple,
+                                    difficulty: .medium,
+                                    category: category,
+                                    question: "Пример вопроса",
+                                    correctAnswer: "Правильный ответ",
+                                    incorrectAnswers: ["Неправильный 1", "Неправильный 2", "Неправильный 3"]
+                                )
+                            )
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .trailing),
+                                removal: .move(edge: .leading)
+                            ))
+                        }
                     }
                 }
                 if isLoading {
