@@ -16,6 +16,7 @@ final class QuestionViewModel: ObservableObject {
     @Published var showAnswerFeedback: Bool = false
     @Published var isCorrectAnswer: Bool = false
     @Published var completeQuiz: Bool = false
+    @Published var shouldCancelTransitions = false
     @Published var isLoading: Bool = false
     @Published var error: Error?
     @Published var score: Int = 0
@@ -78,6 +79,8 @@ final class QuestionViewModel: ObservableObject {
     
     @MainActor
     func moveToNextQuestion() {
+        guard !shouldCancelTransitions else { return }
+        
         showAnswerFeedback = false
         selectedAnswer = nil
         
@@ -89,13 +92,22 @@ final class QuestionViewModel: ObservableObject {
     }
     
     @MainActor
+    func cancelAllTransitions() {
+        shouldCancelTransitions = true
+        showAnswerFeedback = false
+        selectedAnswer = nil
+    }
+    
+    @MainActor
     func resetQuiz() {
         questions = []
         currentQuestionIndex = 0
         selectedAnswer = nil
         showAnswerFeedback = false
         isCorrectAnswer = false
+        completeQuiz = false
         score = 0
         error = nil
+        shouldCancelTransitions = false
     }
 }
