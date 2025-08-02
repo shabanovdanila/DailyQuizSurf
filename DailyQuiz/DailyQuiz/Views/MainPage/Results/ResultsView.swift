@@ -16,9 +16,11 @@ struct ResultsView: View {
     var body: some View {
         VStack(spacing: 0) {
             StarsView(score: resultScore)
+                .padding(.top, Constants.starsTopPadding)
+                .padding(.horizontal, Constants.starsHorizontalPadding)
             
             resultScoreText
-                .padding(.top, Constants.resultScoreVerticalPadding)
+                .padding(.vertical, Constants.resultScoreVerticalPadding)
             
             titleAndText
                 .padding(.horizontal, Constants.textHorizontalPadding)

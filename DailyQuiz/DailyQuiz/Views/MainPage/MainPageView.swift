@@ -7,64 +7,16 @@
 
 import SwiftUI
 
-private enum ContentState {
+private enum ContentState: Equatable {
     case welcome
     case filters
     case questions
+    case results(score: Int)
 }
 
 struct MainPageView: View {
-    
-    // MARK: - Constants
-    private enum Constants {
-        // Layout
-        static let topPadding: CGFloat = 46
-        
-        static let logoLargeSize: CGSize = CGSize(width: 300, height: 68)
-        static let logoSmallSize: CGSize = CGSize(width: 180, height: 40)
-        
-        static let logoTopPadding: CGFloat = 114
-        static let logoHorizontalPadding: CGFloat = 46
-        
-        static let logoSmallTopPadding: CGFloat = 35
-        static let logoSmallHorizontalPadding: CGFloat = 106
-        
-        static let welcomeViewTopPadding: CGFloat = 40
-        static let spacerMinLength: CGFloat = 20
-        
-        static let filterHorizontalPadding: CGFloat = 16
-        static let filterTopPadding: CGFloat = 52
-        
-        static let questionsTopPadding: CGFloat = 40
-        static let questionsHorizontalPadding: CGFloat = 26
-        
-        // History Button
-        static let historyButtonCornerRadius: CGFloat = 24
-        static let historyButtonPadding: CGFloat = 12
-        static let historyIconSize: CGFloat = 16
-        static let historyIconLeadingPadding: CGFloat = 12
-        
-        // Welcome View
-        static let welcomeViewCornerRadius: CGFloat = 46
-        static let welcomeViewHorizontalPadding: CGFloat = 16
-        static let welcomeTitleTopPadding: CGFloat = 32
-        static let buttonVerticalPadding: CGFloat = 15.5
-        static let buttonHorizontalPadding: CGFloat = 51.5
-        static let buttonCornerRadius: CGFloat = 16
-        static let buttonTopPadding: CGFloat = 40
-        static let buttonBottomPadding: CGFloat = 32
-        
-        //Loader
-        static let loaderIconSize: CGFloat = 72
-        static let loaderTopPadding: CGFloat = 120
-        
-        //Toast
-        static let toastTopPadding: CGFloat = 305
-        static let toastHorizontalPadding: CGFloat = 16
-    }
-    
+
     //MARK: - Properties
-    
     @State private var isLoading: Bool = false
     @State private var contentState: ContentState = .welcome
     @State private var isLogoSmall = false
@@ -73,6 +25,8 @@ struct MainPageView: View {
     @State private var selectedDifficulty: String?
     
     @State private var showTimeoutToast: Bool = false
+    
+    @State private var isTransitioning = false
     //MARK: - body
     var body: some View {
         ZStack(alignment: .top) {
@@ -129,15 +83,37 @@ struct MainPageView: View {
                                     correctAnswer: "Правильный ответ",
                                     incorrectAnswers: ["Неправильный 1", "Неправильный 2", "Неправильный 3"]
                                 ),
-                                showTimeoutToast: $showTimeoutToast
+                                onQuizComplete: { score in
+                                    isTransitioning = true
+                                    withAnimation {
+                                        contentState = .results(score: score)
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        isTransitioning = false
+                                    }
+                                }, showTimeoutToast: $showTimeoutToast
                             )
+                            .disabled(isTransitioning)
                             .padding(.top, Constants.questionsTopPadding)
                             .padding(.horizontal, Constants.questionsHorizontalPadding)
                             .transition(.asymmetric(
                                 insertion: .move(edge: .trailing),
-                                removal: .move(edge: .leading)
+                                removal: .move(edge: .trailing).combined(with: .opacity)
                             ))
                         }
+                    case .results(let score):
+                        ResultsPageView(
+                            resultScore: score,
+                            action: {
+                                withAnimation {
+                                    contentState = .welcome
+                                    isLogoSmall = false
+                                }
+                            }
+                        )
+                        .padding(.top, Constants.resultsTopPadding)
+                        .padding(.horizontal, Constants.resultsHorizontalPadding)
+                        .transition(.move(edge: .trailing))
                     }
                 }
                 if isLoading {
@@ -150,7 +126,17 @@ struct MainPageView: View {
                     .ignoresSafeArea()
                     .onTapGesture {}
                 ToastTimeIsUpView(action: {
-                    showTimeoutToast = false
+                    isTransitioning = true
+                    withAnimation {
+                        showTimeoutToast = false
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                            contentState = .welcome
+                            isLogoSmall = false
+                        }
+                        isTransitioning = false
+                    }
                 })
                 .padding(.top, Constants.toastTopPadding)
                 .padding(.horizontal, Constants.toastHorizontalPadding)
@@ -173,6 +159,7 @@ struct MainPageView: View {
             contentState = .welcome
         }
     }
+    
     //MARK: - Loader
     @ViewBuilder
     private func tryAgainText() -> some View {
@@ -273,6 +260,60 @@ struct MainPageView: View {
     }
 }
 
+private extension MainPageView {
+    
+    // MARK: - Constants
+    private enum Constants {
+        // Layout
+        static let topPadding: CGFloat = 46
+        
+        static let logoLargeSize: CGSize = CGSize(width: 300, height: 68)
+        static let logoSmallSize: CGSize = CGSize(width: 180, height: 40)
+        
+        static let logoTopPadding: CGFloat = 114
+        static let logoHorizontalPadding: CGFloat = 46
+        
+        static let logoSmallTopPadding: CGFloat = 35
+        static let logoSmallHorizontalPadding: CGFloat = 106
+        
+        static let welcomeViewTopPadding: CGFloat = 40
+        static let spacerMinLength: CGFloat = 20
+        
+        static let filterHorizontalPadding: CGFloat = 16
+        static let filterTopPadding: CGFloat = 52
+        
+        static let questionsTopPadding: CGFloat = 40
+        static let questionsHorizontalPadding: CGFloat = 26
+        
+        // History Button
+        static let historyButtonCornerRadius: CGFloat = 24
+        static let historyButtonPadding: CGFloat = 12
+        static let historyIconSize: CGFloat = 16
+        static let historyIconLeadingPadding: CGFloat = 12
+        
+        // Welcome View
+        static let welcomeViewCornerRadius: CGFloat = 46
+        static let welcomeViewHorizontalPadding: CGFloat = 16
+        static let welcomeTitleTopPadding: CGFloat = 32
+        static let buttonVerticalPadding: CGFloat = 15.5
+        static let buttonHorizontalPadding: CGFloat = 51.5
+        static let buttonCornerRadius: CGFloat = 16
+        static let buttonTopPadding: CGFloat = 40
+        static let buttonBottomPadding: CGFloat = 32
+        
+        //Loader
+        static let loaderIconSize: CGFloat = 72
+        static let loaderTopPadding: CGFloat = 120
+        
+        //Toast
+        static let toastTopPadding: CGFloat = 305
+        static let toastHorizontalPadding: CGFloat = 16
+        
+        //Result Page
+        static let resultsTopPadding: CGFloat = 40
+        static let resultsHorizontalPadding: CGFloat = 27
+    }
+}
 #Preview {
     MainPageView()
 }

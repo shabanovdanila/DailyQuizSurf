@@ -64,6 +64,7 @@ struct Question: Decodable {
     
     init(type: QuestionType, difficulty: QuestionDifficulty, category: String,
          question: String, correctAnswer: String, incorrectAnswers: [String]) {
+        print(1)
         self.type = type
         self.difficulty = difficulty
         self.category = category

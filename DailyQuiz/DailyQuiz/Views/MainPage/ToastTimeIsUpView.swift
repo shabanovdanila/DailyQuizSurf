@@ -34,24 +34,32 @@ struct ToastTimeIsUpView: View {
                     .padding(.top, Constants.textTopPadding)
             }
             .padding(.horizontal, Constants.textHorizontalPadding)
-            Button(action: action) {
-                HStack {
-                    Spacer()
-                    Text("НАЧАТЬ ЗАНОВО")
-                        .font(AppFontInter.black.size(16))
-                        .foregroundStyle(.dQwhite)
-                        .padding(.vertical, 15.5)
-                    Spacer()
-                }
-                .background(.dQpurple)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
-            .padding(.horizontal, Constants.buttonHorizontalPadding)
-            .padding(.bottom, Constants.buttonBottomPadding)
-            .padding(.top, Constants.buttonTopPadding)
+            
+            AgainButton(action: action)
+                .padding(.horizontal, Constants.buttonHorizontalPadding)
+                .padding(.bottom, Constants.buttonBottomPadding)
+                .padding(.top, Constants.buttonTopPadding)
         }
         .background(.dQwhite)
         .clipShape(RoundedRectangle(cornerRadius: 46))
+    }
+}
+
+struct AgainButton: View {
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Spacer()
+                Text("НАЧАТЬ ЗАНОВО")
+                    .font(AppFontInter.black.size(16))
+                    .foregroundStyle(.dQwhite)
+                    .padding(.vertical, 15.5)
+                Spacer()
+            }
+            .background(.dQpurple)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
     }
 }
 

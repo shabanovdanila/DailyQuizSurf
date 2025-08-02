@@ -7,52 +7,30 @@
 
 import SwiftUI
 
-private enum Constants {
-    //Timer
-    static let timerHorizontalPadding: CGFloat = 30
-    static let timerTopPadding: CGFloat = 32
-    
-    //Question
-    static let questionTopPadding: CGFloat = 38
-    static let questionHorizontalPadding: CGFloat = 24
-    static let questionTopPaddingUnderNumber: CGFloat = 24
-    
-    //Answers
-    static let answerTopPadding: CGFloat = 24
-    static let answerHorizontalPadding: CGFloat = 30
-    
-    //Next button
-    static let nextTopPadding: CGFloat = 67
-    static let nextBottomPadding: CGFloat = 32
-    static let nextHorizontalPadding: CGFloat = 30
-    static let nextTextVerticalPadding: CGFloat = 15.5
-    
-    //Bottom text
-    static let bottomTextTopPadding: CGFloat = 16
-    
-    //Radio button
-    static let radioButtonSize: CGFloat = 20
-    static let radioButtonPadding: CGFloat = 16
-}
 
 struct QuestionView: View {
     //MARK: - Properties
     let question: Question
+    let onQuizComplete: (Int) -> Void
+    
     @State private var numberOfQuestion: Int = 1
     @State private var selectedAnswer: String?
     @State private var showAnswerFeedback: Bool = false
     @State private var isCorrectAnswer: Bool = false
     @State private var needDisable: Bool = false
+    @State private var shouldStopTimer = false
     @Binding var showTimeoutToast: Bool
+    
     //MARK: - body
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
-                TimerView(onTimeout: {
-                    withAnimation {
-                        showTimeoutToast = true
-                    }
-                })
+                TimerView(shouldStopTimer: $shouldStopTimer, onTimeout: {
+                    if !showTimeoutToast {
+                        withAnimation {
+                            showTimeoutToast = true
+                        }
+                    }})
                 .padding(.top, Constants.timerTopPadding)
                 .padding(.horizontal, Constants.timerHorizontalPadding)
                 
@@ -71,7 +49,12 @@ struct QuestionView: View {
                 .padding(.horizontal, Constants.answerHorizontalPadding)
                 
                 NextButton(
-                    action: checkAnswerAndProceed,
+                    action: {
+                        if numberOfQuestion == 5 {
+                            shouldStopTimer = true
+                        }
+                        checkAnswerAndProceed()
+                    },
                     numberOfQuestion: numberOfQuestion,
                     isAnswerSelected: selectedAnswer != nil,
                     needDisable: needDisable
@@ -83,7 +66,7 @@ struct QuestionView: View {
             .background(Color.dQwhite)
             .clipShape(RoundedRectangle(cornerRadius: 46))
             
-            bottomText()
+            bottomText
                 .padding(.top, Constants.bottomTextTopPadding)
         }
         .disabled(needDisable || showTimeoutToast)
@@ -108,8 +91,7 @@ struct QuestionView: View {
     }
     
     //MARK: - Bottom Text View
-    @ViewBuilder
-    private func bottomText() -> some View {
+    private var bottomText: some View {
         Text("Вернуться к предыдущим вопросам нельзя")
             .font(AppFontInter.regular.size(10))
             .foregroundStyle(.dQwhite)
@@ -135,9 +117,14 @@ struct QuestionView: View {
             selectedAnswer = nil
             // Здесь должна быть логика загрузки следующего вопроса
         } else {
-            // Переход к завершающему экрану
+            let score = calculateScore()
+            onQuizComplete(score)
         }
     }
+    private func calculateScore() -> Int {
+           // логика подсчета очков
+           return 4
+       }
 }
     //MARK: - Answers View
 private struct AnswersView: View {
@@ -228,7 +215,7 @@ private struct NextButton: View {
                         .padding(.vertical, Constants.nextTextVerticalPadding)
                     Spacer()
                 }
-                .background(Color.dQpurple)
+                .background(isAnswerSelected ? Color.dQpurple : Color.dQgray)
             } else {
                 HStack {
                     Spacer()
@@ -245,7 +232,33 @@ private struct NextButton: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
-
+private enum Constants {
+    //Timer
+    static let timerHorizontalPadding: CGFloat = 30
+    static let timerTopPadding: CGFloat = 32
+    
+    //Question
+    static let questionTopPadding: CGFloat = 38
+    static let questionHorizontalPadding: CGFloat = 24
+    static let questionTopPaddingUnderNumber: CGFloat = 24
+    
+    //Answers
+    static let answerTopPadding: CGFloat = 24
+    static let answerHorizontalPadding: CGFloat = 30
+    
+    //Next button
+    static let nextTopPadding: CGFloat = 67
+    static let nextBottomPadding: CGFloat = 32
+    static let nextHorizontalPadding: CGFloat = 30
+    static let nextTextVerticalPadding: CGFloat = 15.5
+    
+    //Bottom text
+    static let bottomTextTopPadding: CGFloat = 16
+    
+    //Radio button
+    static let radioButtonSize: CGFloat = 20
+    static let radioButtonPadding: CGFloat = 16
+}
 //#Preview {
 //    QuestionView(question: Question(type: .multiple, difficulty: .hard, category: "asd", question: "Как переводится слово asdasd dasdas apple?", correctAnswer: "Яблоко", incorrectAnswers:
 //                                   ["Груша", "Ананас", "Апельсин"]))
