@@ -8,28 +8,6 @@
 import SwiftUI
 
 struct FiltersView: View {
-    
-    private enum Constants {
-        
-        //FiltersCard
-        static let titleTopPadding: CGFloat = 32
-        static let titleHorizontalPadding: CGFloat = 24
-        
-        static let textTopPadding: CGFloat = 12
-        static let bottomTextTopPadding: CGFloat = 12
-        static let categoryTopPadding: CGFloat = 40
-        static let diffTopPadding: CGFloat = 16
-        static let categoryHorizontalPadding: CGFloat = 30
-        static let nextButtonTopPadding: CGFloat = 39
-        static let nextButtonHorizontalPadding: CGFloat = 40
-        static let nextButtonBottomPadding: CGFloat = 32
-        static let nextButtonTextVerticalPadding: CGFloat = 15.5
-        static let nextButtonTextDisabledHorizontalPadding: CGFloat = 111
-        static let nextButtonTextEnabledHorizontalPadding: CGFloat = 51.5
-        static let rightArrowIconSize: CGFloat = 24
-    }
-    //@StateObject private let viewModel:
-    
     //MARK: - Properties
     let backAction: () -> Void
     let onStartQuiz: () -> Void
@@ -39,8 +17,7 @@ struct FiltersView: View {
     @State private var showingCategorySheet = false
     @State private var showingDifficultySheet = false
     
-    let categories = ["История", "Наука", "Искусство", "Спорт", "Кино"]
-    let difficulties = ["Низкая", "Средняя", "Высокая"]
+    let difficulties = ["easy", "medium", "hard"]
     
     //MARK: - body
     var body: some View {
@@ -57,7 +34,7 @@ struct FiltersView: View {
         .sheet(isPresented: $showingCategorySheet) {
             SelectionSheet(
                 title: "Категория",
-                items: categories,
+                items: TriviaCategory.categoryNames,
                 selectedItem: $selectedCategory
             )
         }
@@ -178,6 +155,28 @@ struct FiltersView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }
+    }
+}
+
+private extension FiltersView {
+    //MARK: - Constants Enum
+    enum Constants {
+        //FiltersCard
+        static let titleTopPadding: CGFloat = 32
+        static let titleHorizontalPadding: CGFloat = 24
+        
+        static let textTopPadding: CGFloat = 12
+        static let bottomTextTopPadding: CGFloat = 12
+        static let categoryTopPadding: CGFloat = 40
+        static let diffTopPadding: CGFloat = 16
+        static let categoryHorizontalPadding: CGFloat = 30
+        static let nextButtonTopPadding: CGFloat = 39
+        static let nextButtonHorizontalPadding: CGFloat = 40
+        static let nextButtonBottomPadding: CGFloat = 32
+        static let nextButtonTextVerticalPadding: CGFloat = 15.5
+        static let nextButtonTextDisabledHorizontalPadding: CGFloat = 111
+        static let nextButtonTextEnabledHorizontalPadding: CGFloat = 51.5
+        static let rightArrowIconSize: CGFloat = 24
     }
 }
 //

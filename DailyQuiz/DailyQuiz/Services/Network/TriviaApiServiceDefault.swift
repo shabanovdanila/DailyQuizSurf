@@ -59,52 +59,6 @@ final class TriviaApiServiceDefault: TriviaApiService {
         return response.results
     }
     
-    func fetchCategories() async throws -> [TriviaCategory] {
-        let response: CategoriesResponse = try await networkService.request(
-            endpoint: "api_category.php", queryItems: nil
-        )
-        return response.triviaCategories
-    }
-    
-    func getSessionToken() async throws -> String {
-        let response: TokenResponse = try await networkService.request(
-            endpoint: "api_token.php",
-            queryItems: [URLQueryItem(name: "command", value: "request")]
-        )
-        
-        guard response.responseCode == 0 else {
-            throw TriviaAPIError.tokenRequestFailed(code: response.responseCode)
-        }
-        
-        guard let token = response.token else {
-            throw TriviaAPIError.tokenNotProvided
-        }
-        
-        self.sessionToken = token
-        return token
-    }
-
-    func resetSessionToken() async throws {
-        guard let currentToken = sessionToken else {
-            throw TriviaAPIError.noActiveSession
-        }
-        
-        let response: ResetTokenResponse = try await networkService.request(
-            endpoint: "api_token.php",
-            queryItems: [
-                URLQueryItem(name: "command", value: "reset"),
-                URLQueryItem(name: "token", value: currentToken)
-            ]
-        )
-        
-        guard response.responseCode == 0 else {
-            throw TriviaAPIError.tokenResetFailed
-        }
-        
-        let newToken = response.token ?? currentToken
-        self.sessionToken = newToken
-    }
-    
     // MARK: - Private Methods
     
     private func handleResponseCode(_ code: Int) throws {
@@ -112,8 +66,6 @@ final class TriviaApiServiceDefault: TriviaApiService {
         case 0: return
         case 1: throw TriviaAPIError.noResults
         case 2: throw TriviaAPIError.invalidParameter
-        case 3: throw TriviaAPIError.tokenNotFound
-        case 4: throw TriviaAPIError.tokenEmpty
         case 5: throw TriviaAPIError.rateLimit
         default: throw TriviaAPIError.unknownCode(code)
         }
@@ -130,36 +82,6 @@ private extension TriviaApiServiceDefault {
         enum CodingKeys: String, CodingKey {
             case responseCode = "response_code"
             case results
-        }
-    }
-    
-    struct CategoriesResponse: Decodable {
-        let triviaCategories: [TriviaCategory]
-        
-        enum CodingKeys: String, CodingKey {
-            case triviaCategories = "trivia_categories"
-        }
-    }
-    
-    struct TokenResponse: Decodable {
-        let responseCode: Int
-        let responseMessage: String
-        let token: String?
-        
-        enum CodingKeys: String, CodingKey {
-            case responseCode = "response_code"
-            case responseMessage = "response_message"
-            case token
-        }
-    }
-    
-    struct ResetTokenResponse: Decodable {
-        let responseCode: Int
-        let token: String?
-        
-        enum CodingKeys: String, CodingKey {
-            case responseCode = "response_code"
-            case token
         }
     }
 }

@@ -15,18 +15,17 @@ private enum ContentState: Equatable {
 }
 
 struct MainPageView: View {
-
+    
     //MARK: - Properties
     @State private var isLoading: Bool = false
     @State private var contentState: ContentState = .welcome
     @State private var isLogoSmall = false
-    
     @State private var selectedCategory: String?
     @State private var selectedDifficulty: String?
-    
     @State private var showTimeoutToast: Bool = false
-    
     @State private var isTransitioning = false
+    
+    @StateObject private var questionViewModel = QuestionViewModel(apiService: TriviaApiServiceDefault())
     //MARK: - body
     var body: some View {
         ZStack(alignment: .top) {
@@ -65,24 +64,16 @@ struct MainPageView: View {
                             ))
                     case .filters:
                         FiltersView(backAction: backToWelcome, onStartQuiz: {
-                            withAnimation {
-                                contentState = .questions
-                            }
+                            print(12211212)
+                            startQuizWithFilters()
                         }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
                         .padding(.horizontal, Constants.filterHorizontalPadding)
                         .padding(.top, Constants.filterTopPadding)
                         .transition(.move(edge: .trailing))
                     case .questions:
-                        if let category = selectedCategory, let difficulty = selectedDifficulty {
+                        if questionViewModel.currentQuestion != nil {
                             QuestionView(
-                                question: Question(
-                                    type: .multiple,
-                                    difficulty: .medium,
-                                    category: category,
-                                    question: "Пример вопроса на 2 строчки напримерjn",
-                                    correctAnswer: "Правильный ответ",
-                                    incorrectAnswers: ["Неправильный 1", "Неправильный 2", "Неправильный 3"]
-                                ),
+                                question: questionViewModel.currentQuestion!,
                                 onQuizComplete: { score in
                                     isTransitioning = true
                                     withAnimation {
@@ -91,7 +82,7 @@ struct MainPageView: View {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                         isTransitioning = false
                                     }
-                                }, showTimeoutToast: $showTimeoutToast
+                                }, showTimeoutToast: $showTimeoutToast, viewModel: questionViewModel
                             )
                             .disabled(isTransitioning)
                             .padding(.top, Constants.questionsTopPadding)
@@ -145,7 +136,18 @@ struct MainPageView: View {
             }
         }
     }
-    
+    private func startQuizWithFilters() {
+        guard let categoryName = selectedCategory,
+              let category = TriviaCategory.category(byName: categoryName),
+              let difficultyName = selectedDifficulty,
+              let difficulty = QuestionDifficulty(rawValue: difficultyName.lowercased()) else { return }
+        Task {
+            await questionViewModel.loadQuestions(category: category.id, difficulty: difficulty)
+            withAnimation {
+                contentState = .questions
+            }
+        }
+    }
     private func startQuiz() {
         withAnimation {
             isLogoSmall = true

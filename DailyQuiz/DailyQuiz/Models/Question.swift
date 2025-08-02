@@ -36,7 +36,6 @@ enum QuestionDifficulty: String, Decodable {
 }
 
 // MARK: - Question Model
-
 struct Question: Decodable {
     // MARK: - Properties
     
@@ -47,7 +46,6 @@ struct Question: Decodable {
     let correctAnswer: String
     let incorrectAnswers: [String]
     
-    let answers: [String]
     // MARK: - Coding Keys
     
     enum CodingKeys: String, CodingKey {
@@ -57,22 +55,27 @@ struct Question: Decodable {
         case question
         case correctAnswer = "correct_answer"
         case incorrectAnswers = "incorrect_answers"
-        case answers
     }
     
     // MARK: - Init
     
     init(type: QuestionType, difficulty: QuestionDifficulty, category: String,
          question: String, correctAnswer: String, incorrectAnswers: [String]) {
-        print(1)
         self.type = type
         self.difficulty = difficulty
         self.category = category
-        self.question = question
-        self.correctAnswer = correctAnswer
-        self.incorrectAnswers = incorrectAnswers
-        var allAnswers = incorrectAnswers
-        allAnswers.append(correctAnswer)
-        self.answers = allAnswers.shuffled()
+        self.question = question.decodedURLString()
+        self.correctAnswer = correctAnswer.decodedURLString()
+        self.incorrectAnswers = incorrectAnswers.map { $0.decodedURLString() }
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.type = try container.decode(QuestionType.self, forKey: .type)
+        self.difficulty = try container.decode(QuestionDifficulty.self, forKey: .difficulty)
+        self.category = try container.decode(String.self, forKey: .category).decodedURLString()
+        self.question = try container.decode(String.self, forKey: .question).decodedURLString()
+        self.correctAnswer = try container.decode(String.self, forKey: .correctAnswer).decodedURLString()
+        self.incorrectAnswers = try container.decode([String].self, forKey: .incorrectAnswers).map { $0.decodedURLString() }
     }
 }

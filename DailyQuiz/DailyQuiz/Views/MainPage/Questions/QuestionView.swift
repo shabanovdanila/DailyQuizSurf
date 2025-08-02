@@ -10,16 +10,13 @@ import SwiftUI
 
 struct QuestionView: View {
     //MARK: - Properties
-    let question: Question
+    let question: DisplayQuestion
     let onQuizComplete: (Int) -> Void
-    
-    @State private var numberOfQuestion: Int = 1
-    @State private var selectedAnswer: String?
-    @State private var showAnswerFeedback: Bool = false
-    @State private var isCorrectAnswer: Bool = false
-    @State private var needDisable: Bool = false
+
     @State private var shouldStopTimer = false
     @Binding var showTimeoutToast: Bool
+    
+    @ObservedObject var viewModel: QuestionViewModel
     
     //MARK: - body
     var body: some View {
@@ -34,15 +31,15 @@ struct QuestionView: View {
                 .padding(.top, Constants.timerTopPadding)
                 .padding(.horizontal, Constants.timerHorizontalPadding)
                 
-                questionText(num: numberOfQuestion, text: question.question)
+                questionText(num: viewModel.currentQuestionIndex + 1, text: question.question)
                     .padding(.top, Constants.questionTopPadding)
                     .padding(.horizontal, Constants.questionHorizontalPadding)
                 
                 AnswersView(
                     answers: question.answers,
-                    selectedAnswer: $selectedAnswer,
-                    showAnswerFeedback: showAnswerFeedback,
-                    isCorrectAnswer: isCorrectAnswer,
+                    selectedAnswer: $viewModel.selectedAnswer,
+                    showAnswerFeedback: viewModel.showAnswerFeedback,
+                    isCorrectAnswer: viewModel.isCorrectAnswer,
                     correctAnswer: question.correctAnswer
                 )
                 .padding(.top, Constants.answerTopPadding)
@@ -50,14 +47,14 @@ struct QuestionView: View {
                 
                 NextButton(
                     action: {
-                        if numberOfQuestion == 5 {
+                        if viewModel.currentQuestionIndex == 4 {
                             shouldStopTimer = true
                         }
                         checkAnswerAndProceed()
                     },
-                    numberOfQuestion: numberOfQuestion,
-                    isAnswerSelected: selectedAnswer != nil,
-                    needDisable: needDisable
+                    numberOfQuestion: viewModel.currentQuestionIndex + 1,
+                    isAnswerSelected: viewModel.selectedAnswer != nil,
+                    needDisable: viewModel.showAnswerFeedback
                 )
                 .padding(.top, Constants.nextTopPadding)
                 .padding(.bottom, Constants.nextBottomPadding)
@@ -69,7 +66,7 @@ struct QuestionView: View {
             bottomText
                 .padding(.top, Constants.bottomTextTopPadding)
         }
-        .disabled(needDisable || showTimeoutToast)
+        .disabled(viewModel.showAnswerFeedback || showTimeoutToast)
     }
     
     //MARK: - Question Text View
@@ -97,34 +94,33 @@ struct QuestionView: View {
             .foregroundStyle(.dQwhite)
     }
     private func checkAnswerAndProceed() {
-        guard !showTimeoutToast else { return }
-        guard let selectedAnswer else { return }
-        
-        isCorrectAnswer = selectedAnswer == question.correctAnswer
-        showAnswerFeedback = true
-        needDisable = true
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            showAnswerFeedback = false
-            needDisable = false
-            goToNextQuestion()
+            guard !showTimeoutToast else { return }
+            guard viewModel.selectedAnswer != nil else { return }
+            
+            viewModel.submitAnswer()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                viewModel.moveToNextQuestion()
+                if viewModel.completeQuiz {
+                    onQuizComplete(viewModel.score)
+                }
+            }
         }
-    }
         
-    private func goToNextQuestion() {
-        if numberOfQuestion < 5 {
-            numberOfQuestion += 1
-            selectedAnswer = nil
-            // Здесь должна быть логика загрузки следующего вопроса
-        } else {
-            let score = calculateScore()
-            onQuizComplete(score)
-        }
-    }
-    private func calculateScore() -> Int {
-           // логика подсчета очков
-           return 4
-       }
+//    private func goToNextQuestion() {
+//        if numberOfQuestion < 5 {
+//            numberOfQuestion += 1
+//            selectedAnswer = nil
+//            // Здесь должна быть логика загрузки следующего вопроса
+//        } else {
+//            let score = calculateScore()
+//            onQuizComplete(score)
+//        }
+//    }
+//    private func calculateScore() -> Int {
+//           // логика подсчета очков
+//           return 4
+//       }
 }
     //MARK: - Answers View
 private struct AnswersView: View {
