@@ -24,122 +24,130 @@ struct MainPageView: View {
     @State private var selectedDifficulty: String?
     @State private var showTimeoutToast: Bool = false
     @State private var isTransitioning = false
+    @State private var showHistory = false
     
     @StateObject private var questionViewModel = QuestionViewModel(apiService: TriviaApiServiceDefault())
     //MARK: - body
     var body: some View {
-        ZStack(alignment: .top) {
-            Color.dQpurple.ignoresSafeArea()
-            VStack(spacing: 0) {
-                if contentState == .welcome {
-                    HistoryButton()
-                        .padding(.top, Constants.topPadding)
-                        .transition(.asymmetric(
-                            insertion: .move(edge: .top),
-                            removal: .move(edge: .top).combined(with: .opacity)
-                        ))
-                }
-                Image("logo_dq")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(.dQwhite)
-                    .frame(
-                        width: isLogoSmall ? Constants.logoSmallSize.width : Constants.logoLargeSize.width,
-                        height: isLogoSmall ? Constants.logoSmallSize.height : Constants.logoLargeSize.height
-                    )
-                    .padding(.top, isLogoSmall ? Constants.logoSmallTopPadding : Constants.logoTopPadding)
-                    .animation(.smooth(duration: 0.5), value: isLogoSmall)
-                
-                if isLoading {
-                    Loader()
-                        .padding(.top, Constants.loaderTopPadding)
-                } else {
-                    switch contentState {
-                    case .welcome:
-                        WelcomeView(startQuiz: startQuiz)
-                            .padding(.top, Constants.welcomeViewTopPadding)
+        NavigationStack {
+            ZStack(alignment: .top) {
+                Color.dQpurple.ignoresSafeArea()
+                VStack(spacing: 0) {
+                    if contentState == .welcome {
+                        HistoryButton {
+                            showHistory = true
+                        }
+                            .padding(.top, Constants.topPadding)
                             .transition(.asymmetric(
-                                insertion: .move(edge: .bottom).animation(.easeOut(duration: 0.5)),
-                                removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25))
+                                insertion: .move(edge: .top),
+                                removal: .move(edge: .top).combined(with: .opacity)
                             ))
-                    case .filters:
-                        FiltersView(backAction: backToWelcome, onStartQuiz: {
-                            startQuizWithFilters()
-                        }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
-                        .padding(.horizontal, Constants.filterHorizontalPadding)
-                        .padding(.top, Constants.filterTopPadding)
-                        .transition(.move(edge: .trailing))
-                    case .questions:
-                        if questionViewModel.currentQuestion != nil {
-                            QuestionView(
-                                question: questionViewModel.currentQuestion!,
-                                onQuizComplete: { score in
+                    }
+                    Image("logo_dq")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundStyle(.dQwhite)
+                        .frame(
+                            width: isLogoSmall ? Constants.logoSmallSize.width : Constants.logoLargeSize.width,
+                            height: isLogoSmall ? Constants.logoSmallSize.height : Constants.logoLargeSize.height
+                        )
+                        .padding(.top, isLogoSmall ? Constants.logoSmallTopPadding : Constants.logoTopPadding)
+                        .animation(.smooth(duration: 0.5), value: isLogoSmall)
+                    
+                    if isLoading {
+                        Loader()
+                            .padding(.top, Constants.loaderTopPadding)
+                    } else {
+                        switch contentState {
+                        case .welcome:
+                            WelcomeView(startQuiz: startQuiz)
+                                .padding(.top, Constants.welcomeViewTopPadding)
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .bottom).animation(.easeOut(duration: 0.5)),
+                                    removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25))
+                                ))
+                        case .filters:
+                            FiltersView(backAction: backToWelcome, onStartQuiz: {
+                                startQuizWithFilters()
+                            }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
+                            .padding(.horizontal, Constants.filterHorizontalPadding)
+                            .padding(.top, Constants.filterTopPadding)
+                            .transition(.move(edge: .trailing))
+                        case .questions:
+                            if questionViewModel.currentQuestion != nil {
+                                QuestionView(
+                                    question: questionViewModel.currentQuestion!,
+                                    onQuizComplete: { score in
+                                        let quizData = questionViewModel.prepareQuizData()
+                                        CoreDataManager.shared.saveQuizResult(quizData: quizData)
+                                        isTransitioning = true
+                                        withAnimation {
+                                            contentState = .results(score: score)
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            isTransitioning = false
+                                        }
+                                    }, showTimeoutToast: $showTimeoutToast, viewModel: questionViewModel
+                                )
+                                .disabled(isTransitioning)
+                                .padding(.top, Constants.questionsTopPadding)
+                                .padding(.horizontal, Constants.questionsHorizontalPadding)
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing),
+                                    removal: .move(edge: .trailing).combined(with: .opacity)
+                                ))
+                            }
+                        case .results(let score):
+                            ResultsPageView(
+                                resultScore: score,
+                                action: {
                                     let quizData = questionViewModel.prepareQuizData()
                                     CoreDataManager.shared.saveQuizResult(quizData: quizData)
-                                    isTransitioning = true
+                                    
+                                    questionViewModel.resetQuiz()
                                     withAnimation {
-                                        contentState = .results(score: score)
+                                        contentState = .welcome
+                                        isLogoSmall = false
                                     }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        isTransitioning = false
-                                    }
-                                }, showTimeoutToast: $showTimeoutToast, viewModel: questionViewModel
-                            )
-                            .disabled(isTransitioning)
-                            .padding(.top, Constants.questionsTopPadding)
-                            .padding(.horizontal, Constants.questionsHorizontalPadding)
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .trailing),
-                                removal: .move(edge: .trailing).combined(with: .opacity)
-                            ))
-                        }
-                    case .results(let score):
-                        ResultsPageView(
-                            resultScore: score,
-                            action: {
-                                let quizData = questionViewModel.prepareQuizData()
-                                CoreDataManager.shared.saveQuizResult(quizData: quizData)
-                                
-                                questionViewModel.resetQuiz()
-                                withAnimation {
-                                    contentState = .welcome
-                                    isLogoSmall = false
                                 }
-                            }
-                        )
-                        .padding(.top, Constants.resultsTopPadding)
-                        .padding(.horizontal, Constants.resultsHorizontalPadding)
-                        .transition(.move(edge: .trailing))
-                    }
-                }
-                if isLoading {
-                    tryAgainText()
-                }
-                Spacer(minLength: Constants.spacerMinLength)
-            }
-            if showTimeoutToast {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .onTapGesture {}
-                ToastTimeIsUpView(action: {
-                    isTransitioning = true
-                    questionViewModel.cancelAllTransitions()
-                    withAnimation {
-                        showTimeoutToast = false
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                            contentState = .welcome
-                            isLogoSmall = false
-                            questionViewModel.resetQuiz()
+                            )
+                            .padding(.top, Constants.resultsTopPadding)
+                            .padding(.horizontal, Constants.resultsHorizontalPadding)
+                            .transition(.move(edge: .trailing))
                         }
-                        isTransitioning = false
                     }
-                })
-                .padding(.top, Constants.toastTopPadding)
-                .padding(.horizontal, Constants.toastHorizontalPadding)
-                .transition(.scale.combined(with: .opacity))
-                .zIndex(1)
+                    if isLoading {
+                        tryAgainText()
+                    }
+                    Spacer(minLength: Constants.spacerMinLength)
+                }
+                if showTimeoutToast {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                        .onTapGesture {}
+                    ToastTimeIsUpView(action: {
+                        isTransitioning = true
+                        questionViewModel.cancelAllTransitions()
+                        withAnimation {
+                            showTimeoutToast = false
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                contentState = .welcome
+                                isLogoSmall = false
+                                questionViewModel.resetQuiz()
+                            }
+                            isTransitioning = false
+                        }
+                    })
+                    .padding(.top, Constants.toastTopPadding)
+                    .padding(.horizontal, Constants.toastHorizontalPadding)
+                    .transition(.scale.combined(with: .opacity))
+                    .zIndex(1)
+                }
+            }
+            .navigationDestination(isPresented: $showHistory) {
+                HistoryPageView(quizHistory: CoreDataManager.shared.fetchQuizHistory())
             }
         }
     }
@@ -181,8 +189,10 @@ struct MainPageView: View {
     
     //MARK: - HistoryButton
     private struct HistoryButton: View {
+        let action: () -> Void
+        
         var body: some View {
-            Button(action: {}) {
+            Button(action: action) {
                 HStack(spacing: 0) {
                     Text("История")
                         .font(AppFontInter.semiBold.size(12))

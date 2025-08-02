@@ -28,7 +28,7 @@ struct HistoryCardView: View {
                 .padding(.bottom, Constants.filtersBottomPadding)
         }
         .background(Color.dQwhite)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 40))
     }
     
     private var titleStars: some View {
@@ -62,12 +62,12 @@ struct HistoryCardView: View {
     }
     
     private var filtersBlockView: some View {
-        VStack(spacing: 4) {
+        VStack(alignment: .center, spacing: 4) {
             Text("Категория: \(historyItem.category ?? "Unknown")")
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .center)
             
             Text("Сложность: \(historyItem.difficulty ?? "Unknown")")
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
         .font(AppFontInter.regular.size(12))
         .foregroundStyle(.black)

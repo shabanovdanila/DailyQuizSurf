@@ -9,22 +9,44 @@ import SwiftUI
 
 struct HistoryPageView: View {
     let quizHistory: [QuizHistory]
+    
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
         ZStack {
             Color.dQpurple
                 .ignoresSafeArea()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    title
-                        .padding(.top, Constants.titleTopPadding)
-                        .padding(.horizontal, Constants.titleHorizontalPadding)
-                    ListCardsView(quizHistory: quizHistory)
-                        .padding(.top, Constants.cardsTopPadding)
-                        .padding(.horizontal, Constants.cardsHorizontalPadding)
                     
+                    ZStack {
+                        HStack() {
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Image("back_icon")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: Constants.backSize, height: Constants.backSize)
+                            }
+                            Spacer()
+                        }
+                        .padding(.horizontal, Constants.backLeadingPadding)
+                        
+                        title
+                    }
+                    .padding(.top, Constants.titleTopPadding)
+                    
+                    VStack(spacing: 0) {
+                        ListCardsView(quizHistory: quizHistory)
+                            .padding(.top, Constants.cardsTopPadding)
+                            .padding(.horizontal, Constants.cardsHorizontalPadding)
+                        
+                    }
                 }
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     private var title: some View {
@@ -55,5 +77,9 @@ private extension HistoryPageView {
         static let cardsTopPadding: CGFloat = 40
         static let cardsHorizontalPadding: CGFloat = 27
         static let cardsSpacing: CGFloat = 24
+        
+        //Back button
+        static let backSize: CGFloat = 24
+        static let backLeadingPadding: CGFloat = 26
     }
 }
