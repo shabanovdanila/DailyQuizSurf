@@ -101,6 +101,7 @@ final class QuestionViewModel: ObservableObject {
     @MainActor
     func resetQuiz() {
         questions = []
+        displayQuestions = []
         currentQuestionIndex = 0
         selectedAnswer = nil
         showAnswerFeedback = false
@@ -109,5 +110,6 @@ final class QuestionViewModel: ObservableObject {
         score = 0
         error = nil
         shouldCancelTransitions = false
+        isLoading = false
     }
 }
