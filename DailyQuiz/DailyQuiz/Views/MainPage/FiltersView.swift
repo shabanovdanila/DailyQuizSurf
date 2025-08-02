@@ -17,7 +17,7 @@ struct FiltersView: View {
     @State private var showingCategorySheet = false
     @State private var showingDifficultySheet = false
     
-    let difficulties = ["Низкая", "Средняя", "Высокая"]
+    let difficulties = ["easy", "medium", "hard"]
     
     //MARK: - body
     var body: some View {

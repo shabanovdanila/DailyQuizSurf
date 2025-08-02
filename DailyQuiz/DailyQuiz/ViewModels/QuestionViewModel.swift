@@ -20,27 +20,21 @@ final class QuestionViewModel: ObservableObject {
     @Published var error: Error?
     @Published var score: Int = 0
     
-    private let questionsAmount: Int = 5
-    private var category: Int?
-    private var difficulty: QuestionDifficulty?
-    private var type: QuestionType?
+    @Published private(set) var displayQuestions: [DisplayQuestion] = []
     
-    init(apiService: TriviaApiService,
-         category: Int? = nil,
-         difficulty: QuestionDifficulty? = nil,
-         type: QuestionType? = nil) {
+    private let questionsAmount: Int = 5
+    private var type: QuestionType = .multiple
+    
+    init(apiService: TriviaApiService) {
         self.apiService = apiService
-        self.category = category
-        self.difficulty = difficulty
-        self.type = type
     }
     
-    var currentQuestion: Question? {
-        return questions[safe: currentQuestionIndex]
+    var currentQuestion: DisplayQuestion? {
+        return displayQuestions[safe: currentQuestionIndex]
     }
     
     @MainActor
-    func loadQuestions() async {
+    func loadQuestions(category: Int? = nil, difficulty: QuestionDifficulty? = nil) async {
         guard !isLoading else { return }
         
         isLoading = true
@@ -54,9 +48,11 @@ final class QuestionViewModel: ObservableObject {
                 type: type
             )
             currentQuestionIndex = 0
+            displayQuestions = questions.map { DisplayQuestion(from: $0) }
         } catch {
             self.error = error
             questions = []
+            displayQuestions = []
         }
         
         isLoading = false
