@@ -12,7 +12,7 @@ struct TimerView: View {
     @State private var timeElapsed = "00:00"
     @State private var startTime: Date?
     
-    private let totalDuration: TimeInterval = 300
+    private let totalDuration: TimeInterval = 5
     private let timeRemaining = "05:00"
     
     var onTimeout: (() -> Void)?

@@ -14,6 +14,8 @@ struct FiltersView: View {
         //FiltersCard
         static let titleTopPadding: CGFloat = 32
         static let titleHorizontalPadding: CGFloat = 24
+        
+        static let textTopPadding: CGFloat = 12
         static let bottomTextTopPadding: CGFloat = 12
         static let categoryTopPadding: CGFloat = 40
         static let diffTopPadding: CGFloat = 16
@@ -85,6 +87,7 @@ struct FiltersView: View {
                         .font(AppFontInter.bold.size(24))
                         .foregroundStyle(.black)
                     Text("Осталось выбрать категорию и сложность викторины")
+                        .padding(.top, Constants.textTopPadding)
                         .font(AppFontInter.regular.size(16))
                         .multilineTextAlignment(.center)
                 }
@@ -132,15 +135,6 @@ struct FiltersView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .padding(.top, Constants.nextButtonTopPadding)
                 .padding(.bottom, Constants.nextButtonBottomPadding)
-                //
-                Button(action: backAction) {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                        Text("Назад")
-                    }
-                    .foregroundColor(.dQpurple)
-                }
-                .padding(.top, 20)
             }
             .background(Color.dQwhite)
             .clipShape(RoundedRectangle(cornerRadius: 46))

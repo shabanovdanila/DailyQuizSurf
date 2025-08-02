@@ -16,6 +16,7 @@ struct SelectionSheet: View {
         static let linesTopPadding: CGFloat = 30
         static let bottomPadding: CGFloat = 20
         static let cornerRadius: CGFloat = 35
+        static let checkmarkSize: CGFloat = 26
     }
     
     let title: String
@@ -43,7 +44,8 @@ struct SelectionSheet: View {
                                     .font(AppFontInter.bold.size(16))
                                     .foregroundStyle(.dQdarkPurple)
                                 Spacer()
-                                Image(systemName: "checkmark")
+                                Image("check_mark_icon")
+                                    .frame(width: Constants.checkmarkSize, height: Constants.checkmarkSize)
                                     .foregroundColor(.dQpurple)
                             } else {
                                 Text(item)

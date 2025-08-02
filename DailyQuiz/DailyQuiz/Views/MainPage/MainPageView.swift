@@ -35,6 +35,9 @@ struct MainPageView: View {
         static let filterHorizontalPadding: CGFloat = 16
         static let filterTopPadding: CGFloat = 52
         
+        static let questionsTopPadding: CGFloat = 40
+        static let questionsHorizontalPadding: CGFloat = 26
+        
         // History Button
         static let historyButtonCornerRadius: CGFloat = 24
         static let historyButtonPadding: CGFloat = 12
@@ -54,6 +57,10 @@ struct MainPageView: View {
         //Loader
         static let loaderIconSize: CGFloat = 72
         static let loaderTopPadding: CGFloat = 120
+        
+        //Toast
+        static let toastTopPadding: CGFloat = 305
+        static let toastHorizontalPadding: CGFloat = 16
     }
     
     //MARK: - Properties
@@ -65,9 +72,10 @@ struct MainPageView: View {
     @State private var selectedCategory: String?
     @State private var selectedDifficulty: String?
     
+    @State private var showTimeoutToast: Bool = false
     //MARK: - body
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Color.dQpurple.ignoresSafeArea()
             VStack(spacing: 0) {
                 if contentState == .welcome {
@@ -86,8 +94,8 @@ struct MainPageView: View {
                         width: isLogoSmall ? Constants.logoSmallSize.width : Constants.logoLargeSize.width,
                         height: isLogoSmall ? Constants.logoSmallSize.height : Constants.logoLargeSize.height
                     )
-                .padding(.top, isLogoSmall ? Constants.logoSmallTopPadding : Constants.logoTopPadding)
-                .animation(.smooth(duration: 0.5), value: isLogoSmall)
+                    .padding(.top, isLogoSmall ? Constants.logoSmallTopPadding : Constants.logoTopPadding)
+                    .animation(.smooth(duration: 0.5), value: isLogoSmall)
                 
                 if isLoading {
                     Loader()
@@ -107,9 +115,9 @@ struct MainPageView: View {
                                 contentState = .questions
                             }
                         }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
-                            .padding(.horizontal, Constants.filterHorizontalPadding)
-                            .padding(.top, Constants.filterTopPadding)
-                            .transition(.move(edge: .trailing))
+                        .padding(.horizontal, Constants.filterHorizontalPadding)
+                        .padding(.top, Constants.filterTopPadding)
+                        .transition(.move(edge: .trailing))
                     case .questions:
                         if let category = selectedCategory, let difficulty = selectedDifficulty {
                             QuestionView(
@@ -117,11 +125,14 @@ struct MainPageView: View {
                                     type: .multiple,
                                     difficulty: .medium,
                                     category: category,
-                                    question: "Пример вопроса",
+                                    question: "Пример вопроса на 2 строчки напримерjn",
                                     correctAnswer: "Правильный ответ",
                                     incorrectAnswers: ["Неправильный 1", "Неправильный 2", "Неправильный 3"]
-                                )
+                                ),
+                                showTimeoutToast: $showTimeoutToast
                             )
+                            .padding(.top, Constants.questionsTopPadding)
+                            .padding(.horizontal, Constants.questionsHorizontalPadding)
                             .transition(.asymmetric(
                                 insertion: .move(edge: .trailing),
                                 removal: .move(edge: .leading)
@@ -133,6 +144,18 @@ struct MainPageView: View {
                     tryAgainText()
                 }
                 Spacer(minLength: Constants.spacerMinLength)
+            }
+            if showTimeoutToast {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .onTapGesture {}
+                ToastTimeIsUpView(action: {
+                    showTimeoutToast = false
+                })
+                .padding(.top, Constants.toastTopPadding)
+                .padding(.horizontal, Constants.toastHorizontalPadding)
+                .transition(.scale.combined(with: .opacity))
+                .zIndex(1)
             }
         }
     }

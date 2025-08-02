@@ -43,7 +43,7 @@ struct QuestionView: View {
     @State private var showAnswerFeedback: Bool = false
     @State private var isCorrectAnswer: Bool = false
     @State private var needDisable: Bool = false
-    @State private var showTimeoutToast = false
+    @Binding var showTimeoutToast: Bool
     //MARK: - body
     var body: some View {
         VStack(spacing: 0) {
@@ -87,16 +87,6 @@ struct QuestionView: View {
                 .padding(.top, Constants.bottomTextTopPadding)
         }
         .disabled(needDisable || showTimeoutToast)
-        if showTimeoutToast {
-            Color.black.opacity(0.3)
-                .ignoresSafeArea()
-                .onTapGesture {}
-            ToastTimeIsUpView(action: {
-                showTimeoutToast = false
-            })
-            .transition(.scale.combined(with: .opacity))
-            .zIndex(1)
-        }
     }
     
     //MARK: - Question Text View
@@ -110,7 +100,10 @@ struct QuestionView: View {
                 .multilineTextAlignment(.center)
                 .font(AppFontInter.semiBold.size(18))
                 .foregroundStyle(.black)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, Constants.questionTopPaddingUnderNumber)
+                .frame(maxWidth: .infinity)
+                .lineLimit(3)
         }
     }
     
@@ -253,7 +246,7 @@ private struct NextButton: View {
     }
 }
 
-#Preview {
-    QuestionView(question: Question(type: .multiple, difficulty: .hard, category: "asd", question: "Как переводится слово asdasd dasdas apple?", correctAnswer: "Яблоко", incorrectAnswers:
-                                   ["Груша", "Ананас", "Апельсин"]))
-}
+//#Preview {
+//    QuestionView(question: Question(type: .multiple, difficulty: .hard, category: "asd", question: "Как переводится слово asdasd dasdas apple?", correctAnswer: "Яблоко", incorrectAnswers:
+//                                   ["Груша", "Ананас", "Апельсин"]))
+//}
