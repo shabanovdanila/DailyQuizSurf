@@ -15,6 +15,7 @@ struct QuestionView: View {
 
     @State private var shouldStopTimer = false
     @Binding var showTimeoutToast: Bool
+    @State private var activeTransitionTask: Task<Void, Never>?
     
     @ObservedObject var viewModel: QuestionViewModel
     
@@ -66,6 +67,10 @@ struct QuestionView: View {
             bottomText
                 .padding(.top, Constants.bottomTextTopPadding)
         }
+        .onChange(of: showTimeoutToast) {
+            activeTransitionTask?.cancel()
+            viewModel.cancelAllTransitions()
+        }
         .disabled(viewModel.showAnswerFeedback || showTimeoutToast)
     }
     
@@ -83,7 +88,7 @@ struct QuestionView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, Constants.questionTopPaddingUnderNumber)
                 .frame(maxWidth: .infinity)
-                .lineLimit(3)
+                .lineLimit(4)
         }
     }
     
@@ -94,33 +99,27 @@ struct QuestionView: View {
             .foregroundStyle(.dQwhite)
     }
     private func checkAnswerAndProceed() {
-            guard !showTimeoutToast else { return }
-            guard viewModel.selectedAnswer != nil else { return }
+        guard !showTimeoutToast else { return }
+        guard viewModel.selectedAnswer != nil else { return }
+        
+        viewModel.submitAnswer()
+        activeTransitionTask?.cancel()
+        
+        activeTransitionTask = Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
             
-            viewModel.submitAnswer()
+            guard !Task.isCancelled && !viewModel.shouldCancelTransitions else { return }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                viewModel.moveToNextQuestion()
-                if viewModel.completeQuiz {
-                    onQuizComplete(viewModel.score)
+            await MainActor.run {
+                if !showTimeoutToast {
+                    viewModel.moveToNextQuestion()
+                    if viewModel.completeQuiz {
+                        onQuizComplete(viewModel.score)
+                    }
                 }
             }
         }
-        
-//    private func goToNextQuestion() {
-//        if numberOfQuestion < 5 {
-//            numberOfQuestion += 1
-//            selectedAnswer = nil
-//            // Здесь должна быть логика загрузки следующего вопроса
-//        } else {
-//            let score = calculateScore()
-//            onQuizComplete(score)
-//        }
-//    }
-//    private func calculateScore() -> Int {
-//           // логика подсчета очков
-//           return 4
-//       }
+    }
 }
     //MARK: - Answers View
 private struct AnswersView: View {

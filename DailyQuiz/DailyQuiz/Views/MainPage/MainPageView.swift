@@ -118,6 +118,7 @@ struct MainPageView: View {
                     .onTapGesture {}
                 ToastTimeIsUpView(action: {
                     isTransitioning = true
+                    questionViewModel.cancelAllTransitions()
                     withAnimation {
                         showTimeoutToast = false
                     }
@@ -125,6 +126,7 @@ struct MainPageView: View {
                         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                             contentState = .welcome
                             isLogoSmall = false
+                            questionViewModel.resetQuiz()
                         }
                         isTransitioning = false
                     }
