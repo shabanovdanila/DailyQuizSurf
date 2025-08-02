@@ -112,4 +112,22 @@ final class QuestionViewModel: ObservableObject {
         shouldCancelTransitions = false
         isLoading = false
     }
+    
+    func prepareQuizData(category: String? = nil, difficulty: QuestionDifficulty? = nil) -> QuizData {
+        return QuizData(
+            category: category ?? "Unknown",
+            difficulty: difficulty?.rawValue ?? "Unknown",
+            score: score,
+            totalQuestions: questions.count,
+            questions: questions.enumerated().map { index, question in
+                let userAnswer = index == currentQuestionIndex ? selectedAnswer : nil
+                return QuestionAnswer(
+                    text: question.question,
+                    userAnswer: userAnswer ?? "No answer",
+                    correctAnswer: question.correctAnswer,
+                    isCorrect: userAnswer == question.correctAnswer
+                )
+            }
+        )
+    }
 }

@@ -74,6 +74,8 @@ struct MainPageView: View {
                             QuestionView(
                                 question: questionViewModel.currentQuestion!,
                                 onQuizComplete: { score in
+                                    let quizData = questionViewModel.prepareQuizData()
+                                    CoreDataManager.shared.saveQuizResult(quizData: quizData)
                                     isTransitioning = true
                                     withAnimation {
                                         contentState = .results(score: score)
@@ -95,10 +97,13 @@ struct MainPageView: View {
                         ResultsPageView(
                             resultScore: score,
                             action: {
+                                let quizData = questionViewModel.prepareQuizData()
+                                CoreDataManager.shared.saveQuizResult(quizData: quizData)
+                                
+                                questionViewModel.resetQuiz()
                                 withAnimation {
                                     contentState = .welcome
                                     isLogoSmall = false
-                                    questionViewModel.resetQuiz()
                                 }
                             }
                         )

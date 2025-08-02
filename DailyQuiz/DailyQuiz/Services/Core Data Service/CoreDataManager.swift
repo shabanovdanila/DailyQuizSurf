@@ -46,6 +46,7 @@ final class CoreDataManager {
     // MARK: - Quiz History Operations
     
     func saveQuizResult(quizData: QuizData) {
+        
         let history = QuizHistory(context: context)
         history.setValue(UUID(), forKey: "id")
         history.date = Date()
