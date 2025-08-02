@@ -17,7 +17,8 @@ struct StarsView: View {
     //MARK: - Properties
     let score: Int
     let maxScore: Int = 5
-    
+    let starsSpacing: CGFloat
+    let starSize: CGFloat
     //MARK: - body
     var body: some View {
         HStack(spacing: Constants.starsSpacing) {
@@ -25,7 +26,7 @@ struct StarsView: View {
                 Image(index < score ? "star_icon_active" : "star_icon_inactive")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: Constants.starSize, height: Constants.starSize)
+                    .frame(width: starSize, height: starSize)
             }
         }
     }

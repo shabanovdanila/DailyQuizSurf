@@ -12,6 +12,7 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="difficulty" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="score" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="questionResults" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuestionResult" inverseName="quizHistory" inverseEntity="QuestionResult"/>
     </entity>

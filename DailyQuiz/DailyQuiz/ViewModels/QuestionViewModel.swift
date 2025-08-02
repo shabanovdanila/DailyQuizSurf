@@ -115,10 +115,11 @@ final class QuestionViewModel: ObservableObject {
     
     func prepareQuizData(category: String? = nil, difficulty: QuestionDifficulty? = nil) -> QuizData {
         return QuizData(
+            name: nil,
+            date: Date(),
             category: category ?? "Unknown",
             difficulty: difficulty?.rawValue ?? "Unknown",
             score: score,
-            totalQuestions: questions.count,
             questions: questions.enumerated().map { index, question in
                 let userAnswer = index == currentQuestionIndex ? selectedAnswer : nil
                 return QuestionAnswer(

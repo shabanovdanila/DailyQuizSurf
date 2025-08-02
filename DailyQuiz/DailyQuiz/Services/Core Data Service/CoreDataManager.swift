@@ -49,7 +49,8 @@ final class CoreDataManager {
         
         let history = QuizHistory(context: context)
         history.setValue(UUID(), forKey: "id")
-        history.date = Date()
+        history.date = quizData.date
+        history.name = generateNextQuizName()
         history.category = quizData.category
         history.difficulty = quizData.difficulty
         history.score = Int16(quizData.score)
@@ -64,6 +65,21 @@ final class CoreDataManager {
         }
         
         saveContext()
+    }
+    
+    private func generateNextQuizName() -> String {
+        let request: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        
+        do {
+            let lastQuiz = try context.fetch(request).first
+            if let lastName = lastQuiz?.name, let lastNumber = Int(lastName.replacingOccurrences(of: "Quiz ", with: "")) {
+                return "Quiz \(lastNumber + 1)"
+            }
+        } catch {
+            print("Error fetching last quiz: \(error)")
+        }
+        return "Quiz 1"
     }
     
     func fetchQuizHistory(limit: Int? = nil) -> [QuizHistory] {
@@ -104,10 +120,11 @@ final class CoreDataManager {
 // MARK: - Data Models
 
 struct QuizData {
+    let name: String?
+    let date: Date
     let category: String
     let difficulty: String
     let score: Int
-    let totalQuestions: Int
     let questions: [QuestionAnswer]
 }
 
