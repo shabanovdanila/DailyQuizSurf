@@ -101,9 +101,6 @@ struct MainPageView: View {
                             ResultsPageView(
                                 resultScore: score,
                                 action: {
-                                    let quizData = questionViewModel.prepareQuizData()
-                                    CoreDataManager.shared.saveQuizResult(quizData: quizData)
-                                    
                                     questionViewModel.resetQuiz()
                                     withAnimation {
                                         contentState = .welcome
@@ -126,6 +123,8 @@ struct MainPageView: View {
                         .ignoresSafeArea()
                         .onTapGesture {}
                     ToastTimeIsUpView(action: {
+                        let quizData = questionViewModel.prepareQuizData()
+                        CoreDataManager.shared.saveQuizResult(quizData: quizData)
                         isTransitioning = true
                         questionViewModel.cancelAllTransitions()
                         withAnimation {

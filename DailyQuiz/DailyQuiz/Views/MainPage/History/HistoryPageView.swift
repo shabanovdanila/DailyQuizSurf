@@ -18,7 +18,6 @@ struct HistoryPageView: View {
                 .ignoresSafeArea()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    
                     ZStack {
                         HStack() {
                             Button(action: {
@@ -36,12 +35,16 @@ struct HistoryPageView: View {
                         title
                     }
                     .padding(.top, Constants.titleTopPadding)
-                    
-                    VStack(spacing: 0) {
-                        ListCardsView(quizHistory: quizHistory)
-                            .padding(.top, Constants.cardsTopPadding)
-                            .padding(.horizontal, Constants.cardsHorizontalPadding)
-                        
+                    if (quizHistory.isEmpty) {
+                        EmptyHistoryView(action: { dismiss() })
+                            .padding(.top, Constants.emptyTopPadding)
+                            .padding(.horizontal, Constants.emptyHorizontalPadding)
+                    } else {
+                        VStack(spacing: 0) {
+                            ListCardsView(quizHistory: quizHistory)
+                                .padding(.top, Constants.cardsTopPadding)
+                                .padding(.horizontal, Constants.cardsHorizontalPadding)
+                        }
                     }
                 }
             }
@@ -66,6 +69,40 @@ struct HistoryPageView: View {
             }
         }
     }
+    
+    private struct EmptyHistoryView: View {
+        let action: () -> Void
+        var body: some View {
+            VStack(spacing: 0) {
+                Text("Вы еще не проходили ни одной викторины")
+                    .multilineTextAlignment(.center)
+                    .font(AppFontInter.regular.size(20))
+                    .foregroundStyle(.black)
+                    .padding(.top, Constants.buttonTextTopPadding)
+                    .padding(.horizontal, Constants.buttonTextHorizontalPadding)
+                Button(action: action) {
+                    Text("НАЧАТЬ ВИКТОРИНУ")
+                        .font(AppFontInter.black.size(16))
+                        .foregroundStyle(.dQwhite)
+                        .padding(
+                            .vertical, Constants.nextButtonTextVerticalPadding
+                        )
+                        .padding(
+                            .horizontal, Constants.nextButtonTextHorizontalPadding
+                        )
+                        .background(Color.dQpurple)
+                        .clipShape(RoundedRectangle(
+                            cornerRadius: Constants.nextButtonCornerRadius
+                        ))
+                }
+                .padding(.top, Constants.nextButtonTopPadding)
+                .padding(.bottom, Constants.nextButtonBottomPadding)
+            }
+            .frame(maxWidth: .infinity)
+            .background(.dQwhite)
+            .clipShape(RoundedRectangle(cornerRadius: 46))
+        }
+    }
 }
 private extension HistoryPageView {
     enum Constants {
@@ -75,11 +112,25 @@ private extension HistoryPageView {
         
         //Cards
         static let cardsTopPadding: CGFloat = 40
-        static let cardsHorizontalPadding: CGFloat = 27
+        static let cardsHorizontalPadding: CGFloat = 26
         static let cardsSpacing: CGFloat = 24
         
         //Back button
         static let backSize: CGFloat = 24
         static let backLeadingPadding: CGFloat = 26
+        
+        //Start button
+        static let nextButtonTextVerticalPadding: CGFloat = 15.5
+        static let nextButtonTextHorizontalPadding: CGFloat = 51.5
+        static let nextButtonCornerRadius: CGFloat = 16
+        static let nextButtonTopPadding: CGFloat = 40
+        static let nextButtonBottomPadding: CGFloat = 32
+        
+        static let buttonTextTopPadding: CGFloat = 32
+        static let buttonTextHorizontalPadding: CGFloat = 32
+        
+        //Empty View
+        static let emptyTopPadding: CGFloat = 40
+        static let emptyHorizontalPadding: CGFloat = 16
     }
 }
