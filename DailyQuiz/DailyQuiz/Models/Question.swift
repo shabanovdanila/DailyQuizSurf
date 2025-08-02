@@ -47,6 +47,7 @@ struct Question: Decodable {
     let correctAnswer: String
     let incorrectAnswers: [String]
     
+    let answers: [String]
     // MARK: - Coding Keys
     
     enum CodingKeys: String, CodingKey {
@@ -56,6 +57,7 @@ struct Question: Decodable {
         case question
         case correctAnswer = "correct_answer"
         case incorrectAnswers = "incorrect_answers"
+        case answers
     }
     
     // MARK: - Init
@@ -68,5 +70,8 @@ struct Question: Decodable {
         self.question = question
         self.correctAnswer = correctAnswer
         self.incorrectAnswers = incorrectAnswers
+        var allAnswers = incorrectAnswers
+        allAnswers.append(correctAnswer)
+        self.answers = allAnswers.shuffled()
     }
 }
