@@ -11,12 +11,12 @@ DailyQuiz приложение по прохождению викторин на
 
 **Работа с сетью:** URLSession
 - NetworkService для отправки запроса в сеть. TriviaApiService использует NetworkService для получения списка вопросов.
-- 
+  
 **Работа с памятью:** Core Data
 - CoreDataManager - Singleton-класс отвечает за работу с Core Data.
 - Сохраняет историю викторины saveQuizResult().
 - Получает данные fetchQuizHistory(), fetchQuestions().
-- 
+  
 **Многопоточность:** async/await
   
 **Навигация:** NavigationStack + navigationDestination with routes
