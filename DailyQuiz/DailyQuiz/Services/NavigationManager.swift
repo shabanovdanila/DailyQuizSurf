@@ -17,7 +17,6 @@ class NavigationManager: ObservableObject {
     @Published var path = NavigationPath()
     
     func push(route: AppRoute) {
-        print("pusign")
         path.append(route)
     }
     

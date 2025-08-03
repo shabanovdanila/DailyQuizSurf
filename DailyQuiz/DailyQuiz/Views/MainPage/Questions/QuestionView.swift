@@ -256,7 +256,3 @@ private enum Constants {
     static let radioButtonSize: CGFloat = 20
     static let radioButtonPadding: CGFloat = 16
 }
-//#Preview {
-//    QuestionView(question: Question(type: .multiple, difficulty: .hard, category: "asd", question: "Как переводится слово asdasd dasdas apple?", correctAnswer: "Яблоко", incorrectAnswers:
-//                                   ["Груша", "Ананас", "Апельсин"]))
-//}
