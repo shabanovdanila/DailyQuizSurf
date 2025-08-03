@@ -17,10 +17,8 @@ struct HistoryDetailView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     let quiz: QuizHistory
     private var questions: [QuestionResult] {
-        if let orderedSet = quiz.questions as? NSOrderedSet {
+        if let orderedSet = quiz.questions  {
             return orderedSet.array.compactMap { $0 as? QuestionResult }
-        } else if let set = quiz.questions as? NSSet {
-            return set.allObjects.compactMap { $0 as? QuestionResult }
         }
         return []
     }
