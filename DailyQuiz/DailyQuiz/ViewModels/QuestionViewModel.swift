@@ -121,15 +121,13 @@ final class QuestionViewModel: ObservableObject {
     }
     
     func prepareQuizData() -> QuizData {
-        let questions = displayQuestions.enumerated().map { index, question in
-            let userAnswer = index == currentQuestionIndex ? selectedAnswer : nil
-            
-            return QuestionData(
+        let questions = displayQuestions.map { question in
+            QuestionData(
                 text: question.question,
-                userAnswer: userAnswer ?? getRandomIncorrectAnswer(for: question),
+                userAnswer: question.userSelectedAnswer ?? getRandomIncorrectAnswer(for: question),
                 allAnswers: question.answers,
                 correctAnswer: question.correctAnswer,
-                isCorrect: userAnswer == question.correctAnswer
+                isCorrect: question.userSelectedAnswer == question.correctAnswer
             )
         }
         return QuizData(
@@ -140,6 +138,13 @@ final class QuestionViewModel: ObservableObject {
             score: score,
             questions: questions
         )
+    }
+    func updateSelectedAnswer(for questionId: UUID, answer: String) {
+        if let index = displayQuestions.firstIndex(where: { $0.id == questionId }) {
+            var updatedQuestions = displayQuestions
+            updatedQuestions[index].userSelectedAnswer = answer
+            displayQuestions = updatedQuestions
+        }
     }
 }
 extension QuestionViewModel {

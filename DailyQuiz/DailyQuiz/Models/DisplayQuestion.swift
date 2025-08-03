@@ -8,12 +8,14 @@
 import Foundation
 
 struct DisplayQuestion {
+    let id = UUID()
     let type: QuestionType
     let difficulty: QuestionDifficulty
     let category: String
     let question: String
     let correctAnswer: String
     let answers: [String]
+    var userSelectedAnswer: String? = nil
     
     init(from question: Question) {
         self.type = question.type
@@ -22,5 +24,6 @@ struct DisplayQuestion {
         self.question = question.question
         self.correctAnswer = question.correctAnswer
         self.answers = (question.incorrectAnswers + [question.correctAnswer]).shuffled()
+        self.userSelectedAnswer = nil
     }
 }

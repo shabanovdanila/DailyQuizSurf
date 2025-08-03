@@ -100,7 +100,9 @@ struct QuestionView: View {
     }
     private func checkAnswerAndProceed() {
         guard !showTimeoutToast else { return }
-        guard viewModel.selectedAnswer != nil else { return }
+        guard let selectedAnswer = viewModel.selectedAnswer else { return }
+    
+        viewModel.updateSelectedAnswer(for: question.id, answer: selectedAnswer)
         
         viewModel.submitAnswer()
         activeTransitionTask?.cancel()
