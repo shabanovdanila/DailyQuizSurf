@@ -85,7 +85,6 @@ final class CoreDataManager: ObservableObject {
         let countRequest: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
         do {
             let count = try context.count(for: countRequest)
-            print(count)
             return "Quiz \(count)"
         } catch {
             return "Quiz 1"

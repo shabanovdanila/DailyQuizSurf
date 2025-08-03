@@ -84,7 +84,7 @@ struct MainPageView: View {
                         .padding(.horizontal, Constants.filterHorizontalPadding)
                         .padding(.top, Constants.filterTopPadding)
                         .transition(.move(edge: .trailing))
-                    
+                        
                     case .questions:
                         if questionViewModel.currentQuestion != nil {
                             QuestionView(
@@ -104,7 +104,7 @@ struct MainPageView: View {
                             .disabled(isTransitioning)
                             .padding(.top, Constants.questionsTopPadding)
                             .padding(.horizontal, Constants.questionsHorizontalPadding)
-                           .transition(.move(edge: .trailing))
+                            .transition(.move(edge: .trailing))
                         }
                     case .results(let score):
                         ResultsPageView(
@@ -202,7 +202,7 @@ struct MainPageView: View {
             contentState = .filters
         }
     }
-        
+    
     private func backToWelcome() {
         questionViewModel.resetQuiz()
         withAnimation {

@@ -84,7 +84,7 @@ private extension HistoryCardView {
         // Title and Stars
         static let titleHorizontalPadding: CGFloat = 24
         static let titleTopPadding: CGFloat = 24
-
+        
         // Time
         static let timeTopPadding: CGFloat = 12
         static let timeHorizontalPadding: CGFloat = 24

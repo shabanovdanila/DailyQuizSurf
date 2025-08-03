@@ -34,6 +34,3 @@ private extension ResultsPageView {
         static let buttonBottomPadding: CGFloat = 32
     }
 }
-#Preview {
-    ResultsPageView(resultScore: 4, action: {})
-}

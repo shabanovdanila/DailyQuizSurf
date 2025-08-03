@@ -23,49 +23,49 @@ struct HistoryDetailView: View {
     }
     
     var body: some View {
-            ZStack {
-                Color.dQpurple
-                    .ignoresSafeArea()
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        ZStack {
-                            HStack() {
-                                backButton
-                                Spacer()
-                            }
-                            .padding(.horizontal, Constants.backLeadingPadding)
-                            
-                            title
+        ZStack {
+            Color.dQpurple
+                .ignoresSafeArea()
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    ZStack {
+                        HStack() {
+                            backButton
+                            Spacer()
                         }
-                        .padding(.top, Constants.titleTopPadding)
+                        .padding(.horizontal, Constants.backLeadingPadding)
                         
-                        categoryAndDiff
-                            .padding(.top, Constants.categoryTopPadding)
-                            .padding(.horizontal, Constants.categoryHorizontalPadding)
-                        
-                        ResultsView(resultScore: Int(quiz.score))
-                            .padding(.bottom, Constants.resultInBottomPadding)
-                            .frame(maxWidth: .infinity)
-                            .background(.dQwhite)
-                            .clipShape(RoundedRectangle(cornerRadius: Constants.resultRadius))
-                            .padding(.top, Constants.resultTopPadding)
-                            .padding(.horizontal, Constants.resultHorizontalPadding)
-                        
-                        textYourAnswer
-                            .padding(.top, Constants.textYATopPadding)
-                            .padding(.horizontal, Constants.textYAHorizontalPadding)
-                        listOfQuestions
-                            .padding(.top, Constants.cardsTopPadding)
-                            .padding(.horizontal, Constants.cardsHorizontalPadding)
-                        againButton
-                            .padding(.top, Constants.againButtonTopPadding)
-                            .padding(.bottom, Constants.againButtonBottomPadding)
-                            .padding(.horizontal, Constants.againButtonHorizontalPadding)
+                        title
                     }
+                    .padding(.top, Constants.titleTopPadding)
+                    
+                    categoryAndDiff
+                        .padding(.top, Constants.categoryTopPadding)
+                        .padding(.horizontal, Constants.categoryHorizontalPadding)
+                    
+                    ResultsView(resultScore: Int(quiz.score))
+                        .padding(.bottom, Constants.resultInBottomPadding)
+                        .frame(maxWidth: .infinity)
+                        .background(.dQwhite)
+                        .clipShape(RoundedRectangle(cornerRadius: Constants.resultRadius))
+                        .padding(.top, Constants.resultTopPadding)
+                        .padding(.horizontal, Constants.resultHorizontalPadding)
+                    
+                    textYourAnswer
+                        .padding(.top, Constants.textYATopPadding)
+                        .padding(.horizontal, Constants.textYAHorizontalPadding)
+                    listOfQuestions
+                        .padding(.top, Constants.cardsTopPadding)
+                        .padding(.horizontal, Constants.cardsHorizontalPadding)
+                    againButton
+                        .padding(.top, Constants.againButtonTopPadding)
+                        .padding(.bottom, Constants.againButtonBottomPadding)
+                        .padding(.horizontal, Constants.againButtonHorizontalPadding)
                 }
             }
-            .navigationBarBackButtonHidden(true)
         }
+        .navigationBarBackButtonHidden(true)
+    }
     
     private var title: some View {
         Text("Результаты")

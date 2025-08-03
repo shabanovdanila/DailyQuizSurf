@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Question Type Enum
 
 enum QuestionType: String, Decodable {
-    case multiple = "multiple"
+    case multiple
     case unknown
     
     init(from decoder: Decoder) throws {
@@ -23,16 +23,22 @@ enum QuestionType: String, Decodable {
 // MARK: - Question Difficulty Enum
 
 enum QuestionDifficulty: String, Decodable, CaseIterable {
-    case easy = "easy"
-    case medium = "medium"
-    case hard = "hard"
+    case easy
+    case medium
+    case hard
+    case unknown
     
     var russianName: String {
         switch self {
         case .easy: return "Низкая"
         case .medium: return "Средняя"
         case .hard: return "Сложная"
+        case .unknown: return "Неизвестно"
         }
+    }
+    
+    static var allValidCases: [QuestionDifficulty] {
+        return [.easy, .medium, .hard]
     }
     
     static func fromRussian(_ name: String) -> QuestionDifficulty? {
@@ -42,7 +48,7 @@ enum QuestionDifficulty: String, Decodable, CaseIterable {
     init(from decoder: Decoder) throws {
         let сontainer = try decoder.singleValueContainer()
         let diffString = try сontainer.decode(String.self)
-        self = QuestionDifficulty(rawValue: diffString) ?? .easy
+        self = QuestionDifficulty(rawValue: diffString) ?? .unknown
     }
 }
 
@@ -70,8 +76,14 @@ struct Question: Decodable {
     
     // MARK: - Init
     
-    init(type: QuestionType, difficulty: QuestionDifficulty, category: String,
-         question: String, correctAnswer: String, incorrectAnswers: [String]) {
+    init(
+        type: QuestionType,
+        difficulty: QuestionDifficulty,
+        category: String,
+        question: String,
+        correctAnswer: String,
+        incorrectAnswers: [String]
+    ) {
         self.type = type
         self.difficulty = difficulty
         self.category = category

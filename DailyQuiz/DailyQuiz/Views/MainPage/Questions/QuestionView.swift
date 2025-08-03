@@ -12,7 +12,7 @@ struct QuestionView: View {
     //MARK: - Properties
     let question: DisplayQuestion
     let onQuizComplete: (Int) -> Void
-
+    
     @State private var shouldStopTimer = false
     @Binding var showTimeoutToast: Bool
     @State private var activeTransitionTask: Task<Void, Never>?
@@ -101,7 +101,7 @@ struct QuestionView: View {
     private func checkAnswerAndProceed() {
         guard !showTimeoutToast else { return }
         guard let selectedAnswer = viewModel.selectedAnswer else { return }
-    
+        
         viewModel.updateSelectedAnswer(for: question.id, answer: selectedAnswer)
         
         viewModel.submitAnswer()
@@ -123,7 +123,7 @@ struct QuestionView: View {
         }
     }
 }
-    //MARK: - Answers View
+//MARK: - Answers View
 private struct AnswersView: View {
     let answers: [String]
     @Binding var selectedAnswer: String?
@@ -192,8 +192,8 @@ private struct AnswersView: View {
         return selectedAnswer == answer ? .dQdarkPurple : .clear
     }
 }
-    
-    //MARK: - Next Button
+
+//MARK: - Next Button
 private struct NextButton: View {
     
     var action: () ->  Void

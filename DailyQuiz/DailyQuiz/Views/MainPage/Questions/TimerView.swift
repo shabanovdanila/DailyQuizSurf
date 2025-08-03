@@ -10,15 +10,15 @@ private let timerStep = 0.1
 import SwiftUI
 
 struct TimerView: View {
-    private let totalDuration: TimeInterval = 10
+    private let totalDuration: TimeInterval = 300
     private let timer = Timer.publish(every: timerStep, on: .main, in: .common).autoconnect()
-
+    
     @State private var progress = 0.0
     @State private var timeElapsed = 0.0
     @State private var finished = false
-
+    
     var onTimeout: (() -> Void)?
-
+    
     var body: some View {
         VStack(spacing: 8) {
             HStack {
@@ -58,7 +58,7 @@ struct TimerView: View {
             }
         }
     }
-
+    
     private func format(time: Double) -> String {
         let elapsedMinutes = Int(time) / 60
         let elapsedSeconds = Int(time) % 60

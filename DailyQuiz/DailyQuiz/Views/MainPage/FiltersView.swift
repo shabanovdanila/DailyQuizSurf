@@ -17,9 +17,10 @@ struct FiltersView: View {
     @State private var showingCategorySheet = false
     @State private var showingDifficultySheet = false
     
-    let difficulties = QuestionDifficulty.allCases.map { $0.russianName }
+    let difficulties = QuestionDifficulty.allValidCases.map { $0.russianName }
     //MARK: - body
     var body: some View {
+        
         VStack(spacing: 0) {
             FiltersCard(
                 backAction: backAction,
@@ -179,7 +180,3 @@ private extension FiltersView {
         static let rightArrowIconSize: CGFloat = 24
     }
 }
-//
-//#Preview {
-//    FiltersView(backAction: {})
-//}

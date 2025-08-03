@@ -39,21 +39,21 @@ struct SelectionSheet: View {
                             dismiss()
                         }) {
                             HStack(spacing: 0) {
-                                if (selectedItem == item) {
-                                    Text(item)
-                                        .font(AppFontInter.bold.size(16))
-                                        .foregroundStyle(.dQdarkPurple)
-                                    Spacer()
+                                Text(item)
+                                    .font(selectedItem == item ?
+                                          AppFontInter.bold.size(16) :
+                                            AppFontInter.regular.size(16))
+                                    .foregroundStyle(.dQdarkPurple)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                if selectedItem == item {
                                     Image("check_mark_icon")
                                         .frame(width: Constants.checkmarkSize, height: Constants.checkmarkSize)
                                         .foregroundColor(.dQpurple)
-                                } else {
-                                    Text(item)
-                                        .font(AppFontInter.regular.size(16))
-                                        .foregroundStyle(.dQdarkPurple)
                                 }
                             }
                             .padding(.horizontal, Constants.titleHorizontalPadding)
+                            .frame(maxWidth: .infinity)
                         }
                     }
                     Spacer().frame(height: 10)
