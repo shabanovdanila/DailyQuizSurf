@@ -64,7 +64,6 @@ final class CoreDataManager {
             question.correctAnswer = questionData.correctAnswer
             question.isCorrect = questionData.isCorrect
             
-            // Устанавливаем связь
             question.quizHistory = history
             
             for (index, answer) in questionData.allAnswers.enumerated() {
