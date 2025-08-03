@@ -123,9 +123,11 @@ final class QuestionViewModel: ObservableObject {
     func prepareQuizData() -> QuizData {
         let questions = displayQuestions.enumerated().map { index, question in
             let userAnswer = index == currentQuestionIndex ? selectedAnswer : nil
-            return QuestionAnswer(
+            
+            return QuestionData(
                 text: question.question,
-                userAnswer: userAnswer ?? "No answer",
+                userAnswer: userAnswer ?? getRandomIncorrectAnswer(for: question),
+                allAnswers: question.answers,
                 correctAnswer: question.correctAnswer,
                 isCorrect: userAnswer == question.correctAnswer
             )
@@ -138,5 +140,11 @@ final class QuestionViewModel: ObservableObject {
             score: score,
             questions: questions
         )
+    }
+}
+extension QuestionViewModel {
+    private func getRandomIncorrectAnswer(for question: DisplayQuestion) -> String {
+        let incorrectAnswers = question.answers.filter { $0 != question.correctAnswer }
+        return incorrectAnswers.randomElement() ?? "No answer selected"
     }
 }

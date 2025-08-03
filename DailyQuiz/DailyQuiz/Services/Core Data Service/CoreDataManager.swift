@@ -62,6 +62,14 @@ final class CoreDataManager {
             result.userAnswer = question.userAnswer
             result.isCorrect = question.isCorrect
             result.quizHistory = history
+            
+            for (index, answer) in question.allAnswers.enumerated() {
+                let answerEntity = AllAnswers(context: context)
+                answerEntity.id = UUID()
+                answerEntity.answerText = answer
+                answerEntity.index = Int16(index)
+                answerEntity.question = result
+            }
         }
         
         saveContext()
@@ -125,12 +133,13 @@ struct QuizData {
     let category: String
     let difficulty: String
     let score: Int
-    let questions: [QuestionAnswer]
+    let questions: [QuestionData]
 }
 
-struct QuestionAnswer {
+struct QuestionData {
     let text: String
     let userAnswer: String
+    let allAnswers: [String]
     let correctAnswer: String
     let isCorrect: Bool
 }
