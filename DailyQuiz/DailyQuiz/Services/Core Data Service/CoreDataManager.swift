@@ -77,27 +77,20 @@ final class CoreDataManager: ObservableObject {
         
         do {
             try context.save()
-            print("Данные успешно сохранены")
         } catch {
-            print("Ошибка сохранения: \(error)")
         }
     }
     
     private func generateNextQuizName() -> String {
-        let request: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-        
+        let countRequest: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
         do {
-            let lastQuiz = try context.fetch(request).first
-            if let lastName = lastQuiz?.name, let lastNumber = Int(lastName.replacingOccurrences(of: "Quiz ", with: "")) {
-                return "Quiz \(lastNumber + 1)"
-            }
+            let count = try context.count(for: countRequest)
+            print(count)
+            return "Quiz \(count)"
         } catch {
-            print("Error fetching last quiz: \(error)")
+            return "Quiz 1"
         }
-        return "Quiz 1"
     }
-    
     func fetchQuizHistory(limit: Int? = nil) -> [QuizHistory] {
         let request: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
@@ -109,7 +102,6 @@ final class CoreDataManager: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Fetch error: \(error)")
             return []
         }
     }
@@ -122,7 +114,6 @@ final class CoreDataManager: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Fetch questions error: \(error)")
             return []
         }
     }

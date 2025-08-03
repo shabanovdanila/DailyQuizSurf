@@ -94,6 +94,7 @@ struct HistoryPageView: View {
                         .onTapGesture {
                             navigationManager.push(route: .historyDetail(item))
                         }
+                        .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 40))
                         .contextMenu {
                             Button(role: .destructive) {
                                 deleteQuiz(item)
@@ -111,7 +112,6 @@ struct HistoryPageView: View {
                 try viewContext.save()
                 showDeleteToast = true
             } catch {
-                print("Error deleting quiz: \(error.localizedDescription)")
             }
         }
     }
