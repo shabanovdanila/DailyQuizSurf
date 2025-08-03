@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct HistoryCardView: View {
     let historyItem: QuizHistory
     
@@ -29,8 +27,11 @@ struct HistoryCardView: View {
         }
         .background(Color.dQwhite)
         .clipShape(RoundedRectangle(cornerRadius: 40))
+        
     }
-    
+    private func deleteQuizAttempt() {
+        CoreDataManager.shared.deleteQuiz(historyItem)
+    }
     private var titleStars: some View {
         HStack(spacing: 0) {
             Text(historyItem.name ?? "Quiz")
