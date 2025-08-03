@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Content State
+
 private enum ContentState: Equatable {
     case welcome
     case filters
@@ -14,10 +16,15 @@ private enum ContentState: Equatable {
     case results(score: Int)
 }
 
+// MARK: - MainPageView
+
 struct MainPageView: View {
     
     //MARK: - Properties
+    
     @EnvironmentObject private var navigationManager: NavigationManager
+    
+    @StateObject private var questionViewModel = QuestionViewModel(apiService: TriviaApiServiceDefault())
     
     @State private var contentState: ContentState = .welcome
     @State private var isLogoSmall: Bool = false
@@ -27,11 +34,11 @@ struct MainPageView: View {
     @State private var isTransitioning: Bool = false
     @State private var showBackButton: Bool = false
     
-    @StateObject private var questionViewModel = QuestionViewModel(apiService: TriviaApiServiceDefault())
     //MARK: - body
+    
     var body: some View {
         ZStack(alignment: .top) {
-            Color.dQpurple.ignoresSafeArea()
+            Color.DQpurple.ignoresSafeArea()
             if shouldShowBackButton {
                 VStack {
                     HStack {
@@ -54,72 +61,35 @@ struct MainPageView: View {
                         removal: .move(edge: .top).combined(with: .opacity)
                     ))
                 }
-                Image("logo_dq")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(.dQwhite)
-                    .frame(
-                        width: isLogoSmall ? Constants.logoSmallSize.width : Constants.logoLargeSize.width,
-                        height: isLogoSmall ? Constants.logoSmallSize.height : Constants.logoLargeSize.height
-                    )
-                    .padding(.top, isLogoSmall ? Constants.logoSmallTopPadding : Constants.logoTopPadding)
-                    .animation(.smooth(duration: 0.5), value: isLogoSmall)
+                logoView
                 
                 if questionViewModel.isLoading {
                     LoaderView(width: Constants.loaderIconSize, height: Constants.loaderIconSize)
                         .padding(.top, Constants.loaderTopPadding)
                 } else {
                     switch contentState {
+                        
+                    //MARK: - Welcome State
+                        
                     case .welcome:
-                        WelcomeView(startQuiz: startQuiz)
-                            .padding(.top, Constants.welcomeViewTopPadding)
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .bottom).animation(.easeOut(duration: 0.5)),
-                                removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25))
-                            ))
+                        welcomeState
+                        
+                    //MARK: - Filters State
+                        
                     case .filters:
-                        FiltersView(backAction: backToWelcome, onStartQuiz: {
-                            startQuizWithFilters()
-                        }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
-                        .padding(.horizontal, Constants.filterHorizontalPadding)
-                        .padding(.top, Constants.filterTopPadding)
-                        .transition(.move(edge: .trailing))
-                    
+                        filtersState
+                        
+                    //MARK: - Questions State
+                        
                     case .questions:
                         if questionViewModel.currentQuestion != nil {
-                            QuestionView(
-                                question: questionViewModel.currentQuestion!,
-                                onQuizComplete: { score in
-                                    let quizData = questionViewModel.prepareQuizData()
-                                    CoreDataManager.shared.saveQuizResult(quizData: quizData)
-                                    isTransitioning = true
-                                    withAnimation {
-                                        contentState = .results(score: score)
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        isTransitioning = false
-                                    }
-                                }, showTimeoutToast: $showTimeoutToast, viewModel: questionViewModel
-                            )
-                            .disabled(isTransitioning)
-                            .padding(.top, Constants.questionsTopPadding)
-                            .padding(.horizontal, Constants.questionsHorizontalPadding)
-                           .transition(.move(edge: .trailing))
+                            questionsState
                         }
+                        
+                    //MARK: - Results State
+                        
                     case .results(let score):
-                        ResultsPageView(
-                            resultScore: score,
-                            action: {
-                                questionViewModel.resetQuiz()
-                                withAnimation {
-                                    contentState = .welcome
-                                    isLogoSmall = false
-                                }
-                            }
-                        )
-                        .padding(.top, Constants.resultsTopPadding)
-                        .padding(.horizontal, Constants.resultsHorizontalPadding)
-                        .transition(.move(edge: .trailing))
+                        resultsState(score: score)
                     }
                 }
                 if contentState == .welcome && questionViewModel.showError {
@@ -130,27 +100,7 @@ struct MainPageView: View {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
                     .onTapGesture {}
-                ToastTimeIsUpView(action: {
-                    let quizData = questionViewModel.prepareQuizData()
-                    CoreDataManager.shared.saveQuizResult(quizData: quizData)
-                    isTransitioning = true
-                    questionViewModel.cancelAllTransitions()
-                    withAnimation {
-                        showTimeoutToast = false
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                            contentState = .welcome
-                            isLogoSmall = false
-                            questionViewModel.resetQuiz()
-                        }
-                        isTransitioning = false
-                    }
-                })
-                .padding(.top, Constants.toastTopPadding)
-                .padding(.horizontal, Constants.toastHorizontalPadding)
-                .transition(.scale.combined(with: .opacity))
-                .zIndex(1)
+                    toast
             }
         }
         .disabled(questionViewModel.isLoading)
@@ -161,8 +111,116 @@ struct MainPageView: View {
             }
         }
     }
+    
+    // MARK: - Private SubViews
+    
+    private var logoView: some View{
+        Image("logo_dq")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .foregroundStyle(Color.DQwhite)
+            .frame(
+                width: isLogoSmall ? Constants.logoSmallSize.width : Constants.logoLargeSize.width,
+                height: isLogoSmall ? Constants.logoSmallSize.height : Constants.logoLargeSize.height
+            )
+            .padding(.top, isLogoSmall ? Constants.logoSmallTopPadding : Constants.logoTopPadding)
+            .animation(.smooth(duration: 0.5), value: isLogoSmall)
+    }
+    
+    private var toast: some View {
+        ToastTimeIsUpView(action: {
+            let quizData = questionViewModel.prepareQuizData()
+            CoreDataManager.shared.saveQuizResult(quizData: quizData)
+            isTransitioning = true
+            questionViewModel.cancelAllTransitions()
+            withAnimation {
+                showTimeoutToast = false
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                    contentState = .welcome
+                    isLogoSmall = false
+                    questionViewModel.resetQuiz()
+                }
+                isTransitioning = false
+            }
+        })
+        .padding(.top, Constants.toastTopPadding)
+        .padding(.horizontal, Constants.toastHorizontalPadding)
+        .transition(.scale.combined(with: .opacity))
+        .zIndex(1)
+    }
+    
+    // MARK: - States
+    
+    private var welcomeState: some View {
+        WelcomeView(startQuiz: startQuiz)
+            .padding(.top, Constants.welcomeViewTopPadding)
+            .transition(.asymmetric(
+                insertion: .move(edge: .bottom).animation(.easeOut(duration: 0.5)),
+                removal: .move(edge: .bottom).combined(with: .opacity).animation(.easeIn(duration: 0.25))
+            ))
+    }
+    
+    private var filtersState: some View {
+        FiltersView(backAction: backToWelcome, onStartQuiz: {
+            startQuizWithFilters()
+        }, selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
+        .padding(.horizontal, Constants.filterHorizontalPadding)
+        .padding(.top, Constants.filterTopPadding)
+        .transition(.move(edge: .trailing))
+    }
+    
+    @ViewBuilder
+    private func resultsState(score: Int) -> some View {
+        ResultsPageView(
+            resultScore: score,
+            action: {
+                questionViewModel.resetQuiz()
+                withAnimation {
+                    contentState = .welcome
+                    isLogoSmall = false
+                }
+            }
+        )
+        .padding(.top, Constants.resultsTopPadding)
+        .padding(.horizontal, Constants.resultsHorizontalPadding)
+        .transition(.move(edge: .trailing))
+    }
+    
+    private var questionsState: some View {
+        QuestionView(
+            question: questionViewModel.currentQuestion!,
+            onQuizComplete: { score in
+                let quizData = questionViewModel.prepareQuizData()
+                CoreDataManager.shared.saveQuizResult(quizData: quizData)
+                isTransitioning = true
+                withAnimation {
+                    contentState = .results(score: score)
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    isTransitioning = false
+                }
+            }, showTimeoutToast: $showTimeoutToast, viewModel: questionViewModel
+        )
+        .disabled(isTransitioning)
+        .padding(.top, Constants.questionsTopPadding)
+        .padding(.horizontal, Constants.questionsHorizontalPadding)
+        .transition(.move(edge: .trailing))
+    }
+    
+    //MARK: - Try Again Text
+    
+    private var tryAgainText: some View {
+        Text("Ошибка! Попробуйте ещё раз")
+            .font(AppFontInter.bold.size(Constants.tryAgainTextSize))
+            .foregroundStyle(Color.DQwhite)
+            .padding(.top, Constants.tryAgainTopPadding)
+    }
+    
     //MARK: - Back Button
-    var shouldShowBackButton: Bool {
+    
+    private var shouldShowBackButton: Bool {
         switch contentState {
         case .welcome: return false
         case .filters: return true
@@ -170,17 +228,20 @@ struct MainPageView: View {
         case .results: return false
         }
     }
+    
     private var backButton: some View {
         Button(action: backToWelcome) {
             Image("back_icon")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: Constants.backButtonSize, height: Constants.backButtonSize)
-                .foregroundColor(.dQwhite)
+                .foregroundColor(Color.DQwhite)
                 .opacity(shouldShowBackButton ? 1 : 0)
         }
         .disabled(!shouldShowBackButton)
     }
+    
+    // MARK: - Private Methods
     
     private func startQuizWithFilters() {
         guard let categoryName = selectedCategory,
@@ -202,7 +263,7 @@ struct MainPageView: View {
             contentState = .filters
         }
     }
-        
+    
     private func backToWelcome() {
         questionViewModel.resetQuiz()
         withAnimation {
@@ -211,15 +272,8 @@ struct MainPageView: View {
         }
     }
     
-    //MARK: - Try Again Text
-    private var tryAgainText: some View {
-        Text("Ошибка! Попробуйте ещё раз")
-            .font(AppFontInter.bold.size(20))
-            .foregroundStyle(.dQwhite)
-            .padding(.top, 24)
-    }
-    
     //MARK: - HistoryButton
+    
     private struct HistoryButton: View {
         let action: () -> Void
         
@@ -228,7 +282,7 @@ struct MainPageView: View {
                 HStack(spacing: 0) {
                     Text("История")
                         .font(AppFontInter.semiBold.size(12))
-                        .foregroundStyle(.dQpurple)
+                        .foregroundStyle(Color.DQpurple)
                     
                     Image("history_icon")
                         .resizable()
@@ -237,53 +291,15 @@ struct MainPageView: View {
                             width: Constants.historyIconSize,
                             height: Constants.historyIconSize
                         )
-                        .foregroundStyle(.dQpurple)
+                        .foregroundStyle(Color.DQpurple)
                         .padding(.leading, Constants.historyIconLeadingPadding)
                 }
                 .padding(Constants.historyButtonPadding)
-                .background(.dQwhite)
+                .background(Color.DQwhite)
                 .clipShape(RoundedRectangle(
                     cornerRadius: Constants.historyButtonCornerRadius
                 ))
             }
-        }
-    }
-    //MARK: - Welcome View
-    private struct WelcomeView: View {
-        let startQuiz: () -> Void
-        
-        var body: some View {
-            VStack(spacing: 0) {
-                Text("Добро пожаловать в DailyQuiz!")
-                    .font(AppFontInter.bold.size(28))
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.black)
-                    .padding(.top, Constants.welcomeTitleTopPadding)
-                
-                Button(action: startQuiz) {
-                    Text("НАЧАТЬ ВИКТОРИНУ")
-                        .font(AppFontInter.black.size(16))
-                        .foregroundStyle(.dQwhite)
-                        .padding(
-                            .vertical, Constants.buttonVerticalPadding
-                        )
-                        .padding(
-                            .horizontal, Constants.buttonHorizontalPadding
-                        )
-                        .background(Color.dQpurple)
-                        .clipShape(RoundedRectangle(
-                            cornerRadius: Constants.buttonCornerRadius
-                        ))
-                }
-                .padding(.top, Constants.buttonTopPadding)
-                .padding(.bottom, Constants.buttonBottomPadding)
-            }
-            .frame(maxWidth: .infinity)
-            .background(Color.dQwhite)
-            .clipShape(RoundedRectangle(
-                cornerRadius: Constants.welcomeViewCornerRadius
-            ))
-            .padding(.horizontal, Constants.welcomeViewHorizontalPadding)
         }
     }
 }
@@ -319,16 +335,6 @@ private extension MainPageView {
         static let historyIconSize: CGFloat = 16
         static let historyIconLeadingPadding: CGFloat = 12
         
-        // Welcome View
-        static let welcomeViewCornerRadius: CGFloat = 46
-        static let welcomeViewHorizontalPadding: CGFloat = 16
-        static let welcomeTitleTopPadding: CGFloat = 32
-        static let buttonVerticalPadding: CGFloat = 15.5
-        static let buttonHorizontalPadding: CGFloat = 51.5
-        static let buttonCornerRadius: CGFloat = 16
-        static let buttonTopPadding: CGFloat = 40
-        static let buttonBottomPadding: CGFloat = 32
-        
         //Loader
         static let loaderIconSize: CGFloat = 72
         static let loaderTopPadding: CGFloat = 305
@@ -345,6 +351,9 @@ private extension MainPageView {
         static let backButtonSize: CGFloat = 24
         static let backButtonHorizontalPadding: CGFloat = 26
         static let backButtonTopPadding: CGFloat = 43
+        
+        static let tryAgainTextSize: CGFloat = 20
+        static let tryAgainTopPadding: CGFloat = 24
     }
 }
 #Preview {

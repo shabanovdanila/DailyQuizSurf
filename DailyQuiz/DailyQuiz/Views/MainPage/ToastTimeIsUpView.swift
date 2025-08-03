@@ -7,28 +7,25 @@
 
 import SwiftUI
 
+// MARK: - ToastTimeIsUpView
+
 struct ToastTimeIsUpView: View {
     
-    private enum Constants {
-        static let titleTopPadding: CGFloat = 32
-        static let textTopPadding: CGFloat = 12
-        static let buttonTopPadding: CGFloat = 40
-        static let buttonHorizontalPadding: CGFloat = 40
-        static let buttonBottomPadding: CGFloat = 32
-        static let textHorizontalPadding: CGFloat = 24
-    }
-    
+    // MARK: - Properties
+
     let action: () -> Void
     
+    // MARK: - body
+
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
                 Text("Время вышло!")
-                    .font(AppFontInter.bold.size(24))
+                    .font(AppFontInter.bold.size(Constants.timeIsUpTextSize))
                     .foregroundStyle(.black)
                     .padding(.top,  Constants.titleTopPadding)
                 Text("Вы не успели завершить викторину. Попробуйте еще раз!")
-                    .font(AppFontInter.regular.size(16))
+                    .font(AppFontInter.regular.size(Constants.textAgainSize))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.black)
                     .padding(.top, Constants.textTopPadding)
@@ -40,27 +37,57 @@ struct ToastTimeIsUpView: View {
                 .padding(.bottom, Constants.buttonBottomPadding)
                 .padding(.top, Constants.buttonTopPadding)
         }
-        .background(.dQwhite)
-        .clipShape(RoundedRectangle(cornerRadius: 46))
+        .background(Color.DQwhite)
+        .clipShape(RoundedRectangle(cornerRadius: Constants.toastRadius))
     }
 }
 
+// MARK: - AgainButton
+
 struct AgainButton: View {
+    
+    // MARK: - Properties
+
     let action: () -> Void
+    
+    // MARK: - body
+
     var body: some View {
         Button(action: action) {
             HStack {
                 Spacer()
                 Text("НАЧАТЬ ЗАНОВО")
-                    .font(AppFontInter.black.size(16))
-                    .foregroundStyle(.dQwhite)
-                    .padding(.vertical, 15.5)
+                    .font(AppFontInter.black.size(Constants.textAgainSize))
+                    .foregroundStyle(Color.DQwhite)
+                    .padding(.vertical, Constants.textAgainVerticalPadding)
                 Spacer()
             }
-            .background(.dQpurple)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background(Color.DQpurple)
+            .clipShape(RoundedRectangle(cornerRadius: Constants.buttonAgainRadius))
         }
     }
+}
+
+// MARK: - Constants
+
+private enum Constants {
+    //Toast
+    static let toastRadius: CGFloat = 46
+    
+    static let timeIsUpTextSize: CGFloat = 24
+    static let tryAgainTextSize: CGFloat = 16
+    
+    static let titleTopPadding: CGFloat = 32
+    static let textTopPadding: CGFloat = 12
+    static let buttonTopPadding: CGFloat = 40
+    static let buttonHorizontalPadding: CGFloat = 40
+    static let buttonBottomPadding: CGFloat = 32
+    static let textHorizontalPadding: CGFloat = 24
+    
+    //Again Button
+    static let textAgainSize: CGFloat = 16
+    static let textAgainVerticalPadding: CGFloat = 15.5
+    static let buttonAgainRadius: CGFloat = 16
 }
 
 #Preview {

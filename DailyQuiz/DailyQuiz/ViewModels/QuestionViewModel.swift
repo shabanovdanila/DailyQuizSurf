@@ -7,41 +7,77 @@
 
 import Foundation
 
+// MARK: - DisplayQuestion Model
+
+struct DisplayQuestion {
+    let id = UUID()
+    let type: QuestionType
+    let difficulty: QuestionDifficulty
+    let category: String
+    let question: String
+    let correctAnswer: String
+    let answers: [String]
+    var userSelectedAnswer: String? = nil
+    
+    init(from question: Question) {
+        self.type = question.type
+        self.difficulty = question.difficulty
+        self.category = question.category
+        self.question = question.question
+        self.correctAnswer = question.correctAnswer
+        self.answers = (question.incorrectAnswers + [question.correctAnswer]).shuffled()
+        self.userSelectedAnswer = nil
+    }
+}
+
+// MARK: - QuestionViewModel
+
 final class QuestionViewModel: ObservableObject {
-    private let apiService: TriviaApiService
+    
+    // MARK: - Published Properties
     
     @Published var questions: [Question] = []
+    @Published var score: Int = 0
+    @Published private(set) var displayQuestions: [DisplayQuestion] = []
     @Published var currentQuestionIndex: Int = 0
     @Published var selectedAnswer: String?
+    @Published var error: Error?
+    
     @Published var showAnswerFeedback: Bool = false
     @Published var isCorrectAnswer: Bool = false
     @Published var completeQuiz: Bool = false
     @Published var shouldCancelTransitions = false
     @Published var isLoading: Bool = false
-    @Published var error: Error?
-    @Published var score: Int = 0
     @Published var showError: Bool = false
     
-    @Published private(set) var displayQuestions: [DisplayQuestion] = []
+    // MARK: - Properties
     
-    private let questionsAmount: Int = 5
-    private var type: QuestionType = .multiple
+    private let apiService: TriviaApiService
+    
+    private let questionsAmount: Int = RequestConstants.questionsAmount
+    private let type: QuestionType = RequestConstants.questionType
+    
     private(set) var currentCategory: String?
     private(set) var currentDifficulty: String?
+    
     var isFirstQuestion: Bool {
         return currentQuestionIndex == 0
     }
+    var currentQuestion: DisplayQuestion? {
+        return displayQuestions[safe: currentQuestionIndex]
+    }
+    
+    // MARK: - Init
     
     init(apiService: TriviaApiService) {
         self.apiService = apiService
     }
     
-    var currentQuestion: DisplayQuestion? {
-        return displayQuestions[safe: currentQuestionIndex]
-    }
+    // MARK: - Methods
     
     @MainActor
     func loadQuestions(category: Int? = nil, difficulty: QuestionDifficulty? = nil) async {
+        
         if let category {
             self.currentCategory = TriviaCategory.category(id: category)?.name
         }
@@ -126,6 +162,8 @@ final class QuestionViewModel: ObservableObject {
         showError = false
     }
     
+    // MARK: - Core Data Model Prepare
+    
     func prepareQuizData() -> QuizData {
         let questions = displayQuestions.map { question in
             QuestionData(
@@ -145,6 +183,7 @@ final class QuestionViewModel: ObservableObject {
             questions: questions
         )
     }
+    
     func updateSelectedAnswer(for questionId: UUID, answer: String) {
         if let index = displayQuestions.firstIndex(where: { $0.id == questionId }) {
             var updatedQuestions = displayQuestions
@@ -153,9 +192,18 @@ final class QuestionViewModel: ObservableObject {
         }
     }
 }
-extension QuestionViewModel {
-    private func getRandomIncorrectAnswer(for question: DisplayQuestion) -> String {
+
+// MARK: - QuestionViewModel Extension
+private extension QuestionViewModel {
+    
+    func getRandomIncorrectAnswer(for question: DisplayQuestion) -> String {
         let incorrectAnswers = question.answers.filter { $0 != question.correctAnswer }
         return incorrectAnswers.randomElement() ?? "No answer selected"
+    }
+    
+    //MARK: - Constants Enum
+    enum RequestConstants {
+        static let questionsAmount = 5
+        static let questionType: QuestionType = .multiple
     }
 }

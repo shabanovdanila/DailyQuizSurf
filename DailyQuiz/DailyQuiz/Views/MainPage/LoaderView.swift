@@ -7,10 +7,18 @@
 
 import SwiftUI
 
+// MARK: - LoaderView
+
 struct LoaderView: View {
+    
+    // MARK: - Properties
+
     @State private var isRotating: Bool = false
     let width: CGFloat
     let height: CGFloat
+    
+    // MARK: - body
+
     var body: some View {
         Image("loader_icon")
             .resizable()
@@ -19,7 +27,7 @@ struct LoaderView: View {
                 width: width,
                 height: height
             )
-            .foregroundStyle(.dQwhite)
+            .foregroundStyle(Color.DQwhite)
             .rotationEffect(.degrees(isRotating ? 360 : 0))
             .animation(
                 .linear(duration: 3)

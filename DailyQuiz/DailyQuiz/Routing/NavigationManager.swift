@@ -8,13 +8,22 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Route Enum
+
 enum AppRoute: Hashable {
     case history
     case historyDetail(QuizHistory)
 }
 
-class NavigationManager: ObservableObject {
+// MARK: - Navigation Manager
+
+final class NavigationManager: ObservableObject {
+    
+    // MARK: - Properties
+    
     @Published var path = NavigationPath()
+    
+    // MARK: - Methods
     
     func push(route: AppRoute) {
         path.append(route)

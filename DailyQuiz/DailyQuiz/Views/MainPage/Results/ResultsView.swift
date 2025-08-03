@@ -7,12 +7,16 @@
 
 import SwiftUI
 
+// MARK: - ResultsView
+
 struct ResultsView: View {
     
-    //MARK: - Properties
+    // MARK: - Properties
+    
     let resultScore: Int
     
-    //MARK: - body
+    // MARK: - body
+    
     var body: some View {
         VStack(spacing: 0) {
             StarsView(score: resultScore, starsSpacing: Constants.starsSpacing, starSize: Constants.starSize)
@@ -27,19 +31,22 @@ struct ResultsView: View {
         }
     }
     
+    // MARK: - Private SubViews
+    
     private var resultScoreText: some View {
         Text("\(resultScore) из 5")
-            .font(AppFontInter.bold.size(16))
-            .foregroundStyle(.dQyellow)
+            .font(AppFontInter.bold.size(Constants.resultScoreTextSize))
+            .foregroundStyle(Color.DQyellow)
     }
     
     private var titleAndText: some View {
         VStack(spacing: 0) {
             Text(TitleText.forScore(score: resultScore).rawValue)
-                .font(AppFontInter.bold.size(24))
+                .multilineTextAlignment(.center)
+                .font(AppFontInter.bold.size(Constants.titleAndTextSize))
                 .foregroundStyle(.black)
             Text(SubTitleText.forScore(score: resultScore).rawValue)
-                .font(AppFontInter.regular.size(16))
+                .font(AppFontInter.regular.size(Constants.subTitleTextSize))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.black)
                 .padding(.top, Constants.textTopPadding)
@@ -47,9 +54,16 @@ struct ResultsView: View {
     }
 }
 
+//MARK: - ResultsView Extension
+
 private extension ResultsView {
     //MARK: - Constants Enum
     enum Constants {
+        //Text
+        static let resultScoreTextSize: CGFloat = 16
+        static let titleAndTextSize: CGFloat = 24
+        static let subTitleTextSize: CGFloat = 16
+        
         //Stars
         static let starsTopPadding: CGFloat = 32
         static let starsHorizontalPadding: CGFloat = 24
@@ -71,6 +85,8 @@ private extension ResultsView {
         static let starSize: CGFloat = 52
     }
     
+    //MARK: - Title Text Enum
+
     enum TitleText: String {
         case five = "Идеально!"
         case four = "Почти идеально!"
@@ -92,6 +108,8 @@ private extension ResultsView {
         }
     }
     
+    //MARK: - SubTitle Text Enum
+
     enum SubTitleText: String {
         case five = "5/5 — вы ответили на всё правильно. Это блестящий результат!"
         case four = "4/5 — очень близко к совершенству. Ещё один шаг!"

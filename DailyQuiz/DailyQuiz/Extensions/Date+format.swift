@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - Date Formating
 extension Date {
     func dayMonthString() -> String {
         let dateFormatter = DateFormatter()

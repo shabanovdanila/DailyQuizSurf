@@ -7,9 +7,17 @@
 
 import SwiftUI
 
+// MARK: - ResultsPageView
+
 struct ResultsPageView: View {
+    
+    // MARK: - Properties
+    
     let resultScore: Int
     let action: () -> Void
+    
+    // MARK: - body
+    
     var body: some View {
         VStack(spacing: 0) {
             ResultsView(resultScore: resultScore)
@@ -19,13 +27,14 @@ struct ResultsPageView: View {
                 .padding(.bottom, Constants.buttonBottomPadding)
                 .padding(.top, Constants.buttonTopPadding)
         }
-        .background(.dQwhite)
+        .background(Color.DQwhite)
         .clipShape(RoundedRectangle(cornerRadius: Constants.cardRadius))
     }
 }
 
+// MARK: - ResultsPageView Extension
+
 private extension ResultsPageView {
-    //MARK: - Constants enum
     enum Constants {
         static let cardRadius: CGFloat = 46
         //Button
@@ -33,7 +42,4 @@ private extension ResultsPageView {
         static let buttonHorizontalPadding: CGFloat = 40
         static let buttonBottomPadding: CGFloat = 32
     }
-}
-#Preview {
-    ResultsPageView(resultScore: 4, action: {})
 }
