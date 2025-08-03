@@ -9,9 +9,14 @@ import SwiftUI
 
 struct HistoryPageView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
-    let quizHistory: [QuizHistory]
+    @Environment(\.managedObjectContext) private var viewContext
     
-    @State private var selectedQuiz: QuizHistory?
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \QuizHistory.date, ascending: false)],
+        animation: .default
+    ) private var quizHistory: FetchedResults<QuizHistory>
+    
+    @State private var showDeleteToast = false
     
     var body: some View {
         ZStack {
@@ -42,14 +47,30 @@ struct HistoryPageView: View {
                             .padding(.horizontal, Constants.emptyHorizontalPadding)
                     } else {
                         VStack(spacing: 0) {
-                            ListCardsView(quizHistory: quizHistory, selectedQuiz: $selectedQuiz)
-                                .padding(.top, Constants.cardsTopPadding)
-                                .padding(.horizontal, Constants.cardsHorizontalPadding)
+                            ListCardsView(quizHistory: quizHistory,
+                                          showDeleteToast: $showDeleteToast)
+                            .padding(.top, Constants.cardsTopPadding)
+                            .padding(.horizontal, Constants.cardsHorizontalPadding)
                         }
                     }
                 }
             }
+            if showDeleteToast {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .onTapGesture {}
+                
+                ToastDeletedView(action: {
+                    withAnimation {
+                        showDeleteToast = false
+                    }
+                })
+                .padding(.horizontal, Constants.toastHorizontalPadding)
+                .transition(.scale.combined(with: .opacity))
+                .zIndex(1)
+            }
         }
+        .animation(.easeInOut(duration: 0.4), value: showDeleteToast)
         .navigationBarBackButtonHidden(true)
     }
     
@@ -60,20 +81,37 @@ struct HistoryPageView: View {
     }
     
     private struct ListCardsView: View {
-        
         @EnvironmentObject private var navigationManager: NavigationManager
-        let quizHistory: [QuizHistory]
-        @Binding var selectedQuiz: QuizHistory?
+        @Environment(\.managedObjectContext) private var viewContext
+        var quizHistory: FetchedResults<QuizHistory>
+        @Binding var showDeleteToast: Bool
+        
         
         var body: some View {
             VStack(spacing: Constants.cardsSpacing) {
                 ForEach(quizHistory, id: \.self) { item in
-                    Button(action: {
-                        navigationManager.push(route: .historyDetail(item))
-                    }) {
-                        HistoryCardView(historyItem: item)
-                    }
+                    HistoryCardView(historyItem: item)
+                        .onTapGesture {
+                            navigationManager.push(route: .historyDetail(item))
+                        }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                deleteQuiz(item)
+                                showDeleteToast = true
+                            } label: {
+                                Label("Удалить", systemImage: "trash")
+                            }
+                        }
                 }
+            }
+        }
+        private func deleteQuiz(_ quiz: QuizHistory) {
+            viewContext.delete(quiz)
+            do {
+                try viewContext.save()
+                showDeleteToast = true
+            } catch {
+                print("Error deleting quiz: \(error.localizedDescription)")
             }
         }
     }
@@ -140,5 +178,9 @@ private extension HistoryPageView {
         //Empty View
         static let emptyTopPadding: CGFloat = 40
         static let emptyHorizontalPadding: CGFloat = 16
+        
+        //Toast
+        static let toastTopPadding: CGFloat = 305
+        static let toastHorizontalPadding: CGFloat = 16
     }
 }

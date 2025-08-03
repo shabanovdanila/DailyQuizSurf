@@ -12,7 +12,7 @@ class TimerManager: ObservableObject {
     @Published var timeElapsed = "00:00"
     private var timer: Timer?
     private var startTime: Date?
-    private let totalDuration: TimeInterval = 20
+    private let totalDuration: TimeInterval = 2
     
     func startTimer(onTimeout: @escaping () -> Void) {
         stopTimer()

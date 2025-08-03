@@ -9,7 +9,10 @@ import SwiftUI
 
 @main
 struct DailyQuizApp: App {
+    
     @StateObject private var navigationManager = NavigationManager()
+    @StateObject private var coreDataManager = CoreDataManager.shared
+    
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $navigationManager.path) {
@@ -17,13 +20,14 @@ struct DailyQuizApp: App {
                     .navigationDestination(for: AppRoute.self) { route in
                         switch route {
                         case .history:
-                            HistoryPageView(quizHistory: CoreDataManager.shared.fetchQuizHistory())
+                            HistoryPageView()
                         case .historyDetail(let quiz):
                             HistoryDetailView(quiz: quiz)
                         }
                     }
             }
             .environmentObject(navigationManager)
+            .environment(\.managedObjectContext, coreDataManager.persistentContainer.viewContext)
         }
     }
 }
