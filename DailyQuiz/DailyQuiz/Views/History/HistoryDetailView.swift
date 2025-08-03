@@ -9,8 +9,8 @@ import SwiftUI
 import CoreData
 
 struct HistoryDetailView: View {
-    @Environment(\.dismiss) private var dismiss
-
+    @EnvironmentObject private var navigationManager: NavigationManager
+    
     let quiz: QuizHistory
     
     private var questions: [QuestionResult] {
@@ -77,6 +77,7 @@ struct HistoryDetailView: View {
             Text("Категория: \(quiz.category ?? "Неизвестно")")
                 .font(AppFontInter.regular.size(16))
                 .foregroundStyle(.dQwhite)
+                .multilineTextAlignment(.center)
             Text("Сложность: \(quiz.difficulty ?? "Неизвестно")")
                 .font(AppFontInter.regular.size(16))
                 .foregroundStyle(.dQwhite)
@@ -103,7 +104,7 @@ struct HistoryDetailView: View {
     }
     private var againButton: some View {
         Button(action: {
-            dismiss()
+            navigationManager.popToRoot()
         }) {
             Text("НАЧАТЬ ЗАНОВО")
                 .font(AppFontInter.black.size(16))
@@ -116,10 +117,9 @@ struct HistoryDetailView: View {
     }
     private var backButton: some View {
         Button(action: {
-            dismiss()
+            navigationManager.pop()
         }) {
-            Image(systemName: "chevron.left")
-                .foregroundColor(.dQwhite)
+            Image("back_icon")
                 .frame(width: Constants.backSize, height: Constants.backSize)
         }
     }

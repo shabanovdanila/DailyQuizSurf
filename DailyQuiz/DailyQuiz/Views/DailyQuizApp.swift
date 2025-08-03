@@ -9,9 +9,21 @@ import SwiftUI
 
 @main
 struct DailyQuizApp: App {
+    @StateObject private var navigationManager = NavigationManager()
     var body: some Scene {
         WindowGroup {
-            MainPageView()
+            NavigationStack(path: $navigationManager.path) {
+                MainPageView()
+                    .navigationDestination(for: AppRoute.self) { route in
+                        switch route {
+                        case .history:
+                            HistoryPageView(quizHistory: CoreDataManager.shared.fetchQuizHistory())
+                        case .historyDetail(let quiz):
+                            HistoryDetailView(quiz: quiz)
+                        }
+                    }
+            }
+            .environmentObject(navigationManager)
         }
     }
 }

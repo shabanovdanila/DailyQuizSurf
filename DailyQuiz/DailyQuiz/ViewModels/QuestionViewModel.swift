@@ -20,6 +20,7 @@ final class QuestionViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var error: Error?
     @Published var score: Int = 0
+    @Published var showError: Bool = false
     
     @Published private(set) var displayQuestions: [DisplayQuestion] = []
     
@@ -27,6 +28,9 @@ final class QuestionViewModel: ObservableObject {
     private var type: QuestionType = .multiple
     private(set) var currentCategory: String?
     private(set) var currentDifficulty: String?
+    var isFirstQuestion: Bool {
+        return currentQuestionIndex == 0
+    }
     
     init(apiService: TriviaApiService) {
         self.apiService = apiService
@@ -47,7 +51,7 @@ final class QuestionViewModel: ObservableObject {
         
         isLoading = true
         error = nil
-        
+        showError = false
         do {
             questions = try await apiService.fetchQuestions(
                 amount: questionsAmount,
@@ -61,6 +65,7 @@ final class QuestionViewModel: ObservableObject {
             self.error = error
             questions = []
             displayQuestions = []
+            showError = true
         }
         
         isLoading = false
@@ -118,6 +123,7 @@ final class QuestionViewModel: ObservableObject {
         error = nil
         shouldCancelTransitions = false
         isLoading = false
+        showError = false
     }
     
     func prepareQuizData() -> QuizData {
