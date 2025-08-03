@@ -46,33 +46,42 @@ final class CoreDataManager {
     // MARK: - Quiz History Operations
     
     func saveQuizResult(quizData: QuizData) {
+        let context = persistentContainer.viewContext
         
         let history = QuizHistory(context: context)
-        history.setValue(UUID(), forKey: "id")
+        history.id = UUID()
         history.date = quizData.date
         history.name = generateNextQuizName()
         history.category = quizData.category
         history.difficulty = quizData.difficulty
         history.score = Int16(quizData.score)
         
-        quizData.questions.forEach { question in
-            let result = QuestionResult(context: context)
-            result.setValue(UUID(), forKey: "id")
-            result.questionText = question.text
-            result.userAnswer = question.userAnswer
-            result.isCorrect = question.isCorrect
-            result.quizHistory = history
+        for questionData in quizData.questions {
+            let question = QuestionResult(context: context)
+            question.id = UUID()
+            question.questionText = questionData.text
+            question.userAnswer = questionData.userAnswer
+            question.correctAnswer = questionData.correctAnswer
+            question.isCorrect = questionData.isCorrect
             
-            for (index, answer) in question.allAnswers.enumerated() {
+            // Устанавливаем связь
+            question.quizHistory = history
+            
+            for (index, answer) in questionData.allAnswers.enumerated() {
                 let answerEntity = AllAnswers(context: context)
                 answerEntity.id = UUID()
                 answerEntity.answerText = answer
                 answerEntity.index = Int16(index)
-                answerEntity.question = result
+                answerEntity.question = question
             }
         }
         
-        saveContext()
+        do {
+            try context.save()
+            print("Данные успешно сохранены")
+        } catch {
+            print("Ошибка сохранения: \(error)")
+        }
     }
     
     private func generateNextQuizName() -> String {
