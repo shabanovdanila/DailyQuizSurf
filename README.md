@@ -38,3 +38,9 @@ DailyQuiz приложение по прохождению викторин на
   <img src="screenshots/8.png" width="200">
   <img src="screenshots/9.png" width="200">
 </div>
+
+
+
+
+https://github.com/user-attachments/assets/9de77dfc-27f1-4c03-8ddd-eab84977ad97
+
