@@ -8,60 +8,49 @@
 import SwiftUI
 
 struct HistoryPageView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
     let quizHistory: [QuizHistory]
     
-    @Environment(\.dismiss) private var dismiss
     @State private var selectedQuiz: QuizHistory?
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.dQpurple
-                    .ignoresSafeArea()
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        ZStack {
-                            HStack() {
-                                Button(action: {
-                                    dismiss()
-                                }) {
-                                    Image("back_icon")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: Constants.backSize, height: Constants.backSize)
-                                }
-                                Spacer()
+        ZStack {
+            Color.dQpurple
+                .ignoresSafeArea()
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    ZStack {
+                        HStack() {
+                            Button(action: {
+                                navigationManager.pop()
+                            }) {
+                                Image("back_icon")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: Constants.backSize, height: Constants.backSize)
                             }
-                            .padding(.horizontal, Constants.backLeadingPadding)
-                            
-                            title
+                            Spacer()
                         }
-                        .padding(.top, Constants.titleTopPadding)
-                        if (quizHistory.isEmpty) {
-                            EmptyHistoryView(action: { dismiss() })
-                                .padding(.top, Constants.emptyTopPadding)
-                                .padding(.horizontal, Constants.emptyHorizontalPadding)
-                        } else {
-                            VStack(spacing: 0) {
-                                ListCardsView(quizHistory: quizHistory, selectedQuiz: $selectedQuiz)
-                                    .padding(.top, Constants.cardsTopPadding)
-                                    .padding(.horizontal, Constants.cardsHorizontalPadding)
-                            }
+                        .padding(.horizontal, Constants.backLeadingPadding)
+                        
+                        title
+                    }
+                    .padding(.top, Constants.titleTopPadding)
+                    if (quizHistory.isEmpty) {
+                        EmptyHistoryView(action: { navigationManager.pop() })
+                            .padding(.top, Constants.emptyTopPadding)
+                            .padding(.horizontal, Constants.emptyHorizontalPadding)
+                    } else {
+                        VStack(spacing: 0) {
+                            ListCardsView(quizHistory: quizHistory, selectedQuiz: $selectedQuiz)
+                                .padding(.top, Constants.cardsTopPadding)
+                                .padding(.horizontal, Constants.cardsHorizontalPadding)
                         }
                     }
                 }
             }
-            .navigationBarBackButtonHidden(true)
-            .navigationDestination(isPresented: Binding<Bool>(
-                get: { selectedQuiz != nil },
-                set: { if !$0 { selectedQuiz = nil } }
-            )) {
-                if let quiz = selectedQuiz {
-                    HistoryDetailView(quiz: quiz)
-                        .navigationBarBackButtonHidden(true)
-                }
-            }
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     private var title: some View {
@@ -71,17 +60,19 @@ struct HistoryPageView: View {
     }
     
     private struct ListCardsView: View {
+        
+        @EnvironmentObject private var navigationManager: NavigationManager
         let quizHistory: [QuizHistory]
         @Binding var selectedQuiz: QuizHistory?
+        
         var body: some View {
             VStack(spacing: Constants.cardsSpacing) {
                 ForEach(quizHistory, id: \.self) { item in
                     Button(action: {
-                        selectedQuiz = item
+                        navigationManager.push(route: .historyDetail(item))
                     }) {
                         HistoryCardView(historyItem: item)
                     }
-                    .buttonStyle(PlainButtonStyle())
                 }
             }
         }
