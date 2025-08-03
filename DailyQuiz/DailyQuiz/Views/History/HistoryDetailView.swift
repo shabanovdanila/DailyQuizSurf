@@ -8,11 +8,14 @@
 import SwiftUI
 import CoreData
 
+// MARK: - HistoryDetailView
+
 struct HistoryDetailView: View {
+
+    // MARK: - Properties
+
     @EnvironmentObject private var navigationManager: NavigationManager
-    
     let quiz: QuizHistory
-    
     private var questions: [QuestionResult] {
         if let orderedSet = quiz.questions as? NSOrderedSet {
             return orderedSet.array.compactMap { $0 as? QuestionResult }
@@ -22,6 +25,8 @@ struct HistoryDetailView: View {
         return []
     }
     
+    // MARK: - body
+
     var body: some View {
         ZStack {
             Color.DQpurple
@@ -67,27 +72,32 @@ struct HistoryDetailView: View {
         .navigationBarBackButtonHidden(true)
     }
     
+    // MARK: - Private SubViews
+
     private var title: some View {
         Text("Результаты")
-            .font(AppFontInter.black.size(32))
+            .font(AppFontInter.black.size(Constants.titleTextSize))
             .foregroundStyle(Color.DQwhite)
     }
+    
     private var categoryAndDiff: some View {
         VStack(spacing: Constants.categorySpacing) {
             Text("Категория: \(quiz.category ?? "Неизвестно")")
-                .font(AppFontInter.regular.size(16))
+                .font(AppFontInter.regular.size(Constants.categoryAndDiffTextSize))
                 .foregroundStyle(Color.DQwhite)
                 .multilineTextAlignment(.center)
             Text("Сложность: \(quiz.difficulty ?? "Неизвестно")")
-                .font(AppFontInter.regular.size(16))
+                .font(AppFontInter.regular.size(Constants.categoryAndDiffTextSize))
                 .foregroundStyle(Color.DQwhite)
         }
     }
+    
     private var textYourAnswer: some View {
         Text("Твои ответы")
-            .font(AppFontInter.black.size(32))
+            .font(AppFontInter.black.size(Constants.titleTextSize))
             .foregroundStyle(Color.DQwhite)
     }
+    
     private var listOfQuestions: some View {
         VStack(spacing: Constants.cardsSpacing) {
             ForEach(Array(questions.enumerated()), id: \.element.id) { index, question in
@@ -102,12 +112,13 @@ struct HistoryDetailView: View {
             }
         }
     }
+    
     private var againButton: some View {
         Button(action: {
             navigationManager.popToRoot()
         }) {
             Text("НАЧАТЬ ЗАНОВО")
-                .font(AppFontInter.black.size(16))
+                .font(AppFontInter.black.size(Constants.textAgainSize))
                 .foregroundStyle(Color.DQdarkPurple)
                 .padding(.horizontal, Constants.textAgainButtonHorizontalPadding)
                 .padding(.vertical, Constants.textAgainButtonVerticalPadding)
@@ -115,6 +126,7 @@ struct HistoryDetailView: View {
                 .clipShape(RoundedRectangle(cornerRadius: Constants.againRadius))
         }
     }
+    
     private var backButton: some View {
         Button(action: {
             navigationManager.pop()
@@ -125,16 +137,20 @@ struct HistoryDetailView: View {
     }
 }
 
+// MARK: - HistoryDetailView Extension
+
 private extension HistoryDetailView {
     enum Constants {
         //Title
         static let titleTopPadding: CGFloat = 32
         static let titleHorizontalPadding: CGFloat = 98
+        static let titleTextSize: CGFloat = 32
         
         //Category and Diff
         static let categoryTopPadding: CGFloat = 16
         static let categoryHorizontalPadding: CGFloat = 50
         static let categorySpacing: CGFloat = 4
+        static let categoryAndDiffTextSize: CGFloat = 16
         
         //Result
         static let resultInBottomPadding: CGFloat = 32
@@ -170,6 +186,7 @@ private extension HistoryDetailView {
         //Again button
         static let textAgainButtonVerticalPadding: CGFloat = 15.5
         static let textAgainButtonHorizontalPadding: CGFloat = 67
+        static let textAgainSize: CGFloat = 16
         
         static let againButtonHorizontalPadding: CGFloat = 56
         static let againButtonTopPadding: CGFloat = 24

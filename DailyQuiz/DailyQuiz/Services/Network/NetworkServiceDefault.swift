@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - NetworkService Implementation
 final class NetworkServiceDefault: NetworkService {
     
     // MARK: - Private Properties
@@ -38,7 +39,7 @@ final class NetworkServiceDefault: NetworkService {
                 throw NetworkError.invalidResponse
             }
             
-            guard httpResponse.statusCode == 200 else {
+            guard (200..<300).contains(httpResponse.statusCode) else {
                 throw NetworkError.httpError(statusCode: httpResponse.statusCode)
             }
             

@@ -8,8 +8,13 @@
 import Foundation
 
 struct TriviaCategory: Decodable, Identifiable {
+    
+    // MARK: - Properties
+    
     let id: Int
     let name: String
+    
+    // MARK: - All Available Categories
     
     static let allCategories: [TriviaCategory] = [
         TriviaCategory(id: 9, name: "General Knowledge"),
@@ -37,6 +42,8 @@ struct TriviaCategory: Decodable, Identifiable {
         TriviaCategory(id: 31, name: "Entertainment: Japanese Anime & Manga"),
         TriviaCategory(id: 32, name: "Entertainment: Cartoon & Animations")
     ]
+    
+    // MARK: - Static Methods
     
     static var categoryNames: [String] {
         allCategories.map { $0.name }

@@ -12,18 +12,17 @@ final class TriviaApiServiceDefault: TriviaApiService {
     // MARK: - Private Properties
     
     private let networkService: NetworkService
-    private var sessionToken: String?
     
     //MARK: - Init
     
-    init(networkService: NetworkService = NetworkServiceDefault(baseURL: "https://opentdb.com")) {
+    init(networkService: NetworkService = NetworkServiceDefault(baseURL: ApiConstants.baseURL)) {
         self.networkService = networkService
     }
     
     // MARK: - Public Methods
     
     func fetchQuestions(
-        amount: Int = 5,
+        amount: Int = ApiConstants.defaultAmount,
         category: Int? = nil,
         difficulty: QuestionDifficulty? = nil,
         type: QuestionType? = nil
@@ -31,12 +30,8 @@ final class TriviaApiServiceDefault: TriviaApiService {
         
         var queryItems = [
             URLQueryItem(name: "amount", value: "\(amount)"),
-            URLQueryItem(name: "encode", value: "url3986")
+            URLQueryItem(name: "encode", value: ApiConstants.encodeType)
         ]
-        
-        if let token = sessionToken {
-            queryItems.append(URLQueryItem(name: "token", value: token))
-        }
         
         if let category {
             queryItems.append(URLQueryItem(name: "category", value: "\(category)"))
@@ -72,8 +67,19 @@ final class TriviaApiServiceDefault: TriviaApiService {
     }
 }
 
-// MARK: - Response Models
+// MARK: - TriviaApiServiceDefault Extension
+
 private extension TriviaApiServiceDefault {
+    
+    // MARK: - API Constants
+    
+    enum ApiConstants {
+        static let baseURL = "https://opentdb.com"
+        static let defaultAmount = 5
+        static let encodeType = "url3986"
+    }
+    
+    // MARK: - Response Models
     
     struct QuestionsResponse: Decodable {
         let responseCode: Int

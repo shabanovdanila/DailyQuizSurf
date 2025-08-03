@@ -44,7 +44,7 @@ enum QuestionDifficulty: String, Decodable, CaseIterable {
     static func fromRussian(_ name: String) -> QuestionDifficulty? {
         return allCases.first { $0.russianName == name }
     }
-    
+
     init(from decoder: Decoder) throws {
         let сontainer = try decoder.singleValueContainer()
         let diffString = try сontainer.decode(String.self)
@@ -53,7 +53,9 @@ enum QuestionDifficulty: String, Decodable, CaseIterable {
 }
 
 // MARK: - Question Model
+
 struct Question: Decodable {
+    
     // MARK: - Properties
     
     let type: QuestionType

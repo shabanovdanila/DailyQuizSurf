@@ -8,6 +8,8 @@
 import Foundation
 import CoreData
 
+// MARK: - Core Data Manager
+
 final class CoreDataManager: ObservableObject {
     static let shared = CoreDataManager()
     private init() {}
@@ -18,7 +20,7 @@ final class CoreDataManager: ObservableObject {
         let container = NSPersistentContainer(name: "DailyQuiz")
         container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                print("Unresolved error \(error), \(error.userInfo)")
             }
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
@@ -38,7 +40,7 @@ final class CoreDataManager: ObservableObject {
                 try context.save()
             } catch {
                 let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                print("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
     }
@@ -51,7 +53,7 @@ final class CoreDataManager: ObservableObject {
         let history = QuizHistory(context: context)
         history.id = UUID()
         history.date = quizData.date
-        history.name = generateNextQuizName()
+        history.name = generateNewQuizName()
         history.category = quizData.category
         history.difficulty = quizData.difficulty
         history.score = Int16(quizData.score)
@@ -78,23 +80,26 @@ final class CoreDataManager: ObservableObject {
         do {
             try context.save()
         } catch {
+            print("Failed to save context: \(error.localizedDescription)")
         }
     }
     
-    private func generateNextQuizName() -> String {
+    private func generateNewQuizName() -> String {
         let countRequest: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
         do {
             let count = try context.count(for: countRequest)
             return "Quiz \(count)"
         } catch {
+            print("Failed to count context: \(error.localizedDescription)")
             return "Quiz 1"
         }
     }
+    
     func fetchQuizHistory(limit: Int? = nil) -> [QuizHistory] {
         let request: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         
-        if let limit = limit {
+        if let limit {
             request.fetchLimit = limit
         }
         

@@ -7,8 +7,15 @@
 
 import SwiftUI
 
+// MARK: - HistoryCardView
+
 struct HistoryCardView: View {
+    
+    // MARK: - Propertiess
+    
     let historyItem: QuizHistory
+    
+    // MARK: - body
     
     var body: some View {
         VStack(spacing: 0) {
@@ -26,20 +33,18 @@ struct HistoryCardView: View {
                 .padding(.bottom, Constants.filtersBottomPadding)
         }
         .background(Color.DQwhite)
-        .clipShape(RoundedRectangle(cornerRadius: 40))
+        .clipShape(RoundedRectangle(cornerRadius: Constants.cardRadius))
         
     }
-    private func deleteQuizAttempt() {
-        CoreDataManager.shared.deleteQuiz(historyItem)
-    }
+    
+    // MARK: - Private SubViews
+    
     private var titleStars: some View {
         HStack(spacing: 0) {
             Text(historyItem.name ?? "Quiz")
-                .font(AppFontInter.bold.size(24))
+                .font(AppFontInter.bold.size(Constants.historyNameSize))
                 .foregroundStyle(Color.DQdarkPurple)
-            
             Spacer()
-            
             StarsView(
                 score: Int(historyItem.score),
                 starsSpacing: Constants.starsSpacing,
@@ -50,27 +55,25 @@ struct HistoryCardView: View {
     
     private var dateView: some View {
         HStack(spacing: 0) {
-            Text(historyItem.date?.dayMonthString() ?? "")
-                .font(AppFontInter.regular.size(12))
+            Text(historyItem.date?.dayMonthString() ?? "1 января")
+                .font(AppFontInter.regular.size(Constants.dateTextSize))
                 .foregroundStyle(.black)
-            
             Spacer()
-            
-            Text(historyItem.date?.timeString() ?? "")
-                .font(AppFontInter.regular.size(12))
+            Text(historyItem.date?.timeString() ?? "10:00")
+                .font(AppFontInter.regular.size(Constants.dateTextSize))
                 .foregroundStyle(.black)
         }
     }
     
     private var filtersBlockView: some View {
-        VStack(alignment: .center, spacing: 4) {
+        VStack(alignment: .center, spacing: Constants.filtersSpacing) {
             Text("Категория: \(historyItem.category ?? "Unknown")")
                 .frame(maxWidth: .infinity, alignment: .center)
             
             Text("Сложность: \(historyItem.difficulty ?? "Unknown")")
                 .frame(maxWidth: .infinity, alignment: .center)
         }
-        .font(AppFontInter.regular.size(12))
+        .font(AppFontInter.regular.size(Constants.filtersTextSize))
         .foregroundStyle(.black)
     }
 }
@@ -93,5 +96,14 @@ private extension HistoryCardView {
         static let filtersTopPadding: CGFloat = 12
         static let filtersHorizontalPadding: CGFloat = 24
         static let filtersBottomPadding: CGFloat = 24
+        static let filtersSpacing: CGFloat = 4
+        
+        // Card
+        static let cardRadius: CGFloat = 40
+        
+        // Text Size
+        static let historyNameSize: CGFloat = 24
+        static let dateTextSize: CGFloat = 12
+        static let filtersTextSize: CGFloat = 12
     }
 }
