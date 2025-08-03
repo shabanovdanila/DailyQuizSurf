@@ -30,7 +30,7 @@ struct ResultsView: View {
     private var resultScoreText: some View {
         Text("\(resultScore) из 5")
             .font(AppFontInter.bold.size(16))
-            .foregroundStyle(.dQyellow)
+            .foregroundStyle(Color.DQyellow)
     }
     
     private var titleAndText: some View {

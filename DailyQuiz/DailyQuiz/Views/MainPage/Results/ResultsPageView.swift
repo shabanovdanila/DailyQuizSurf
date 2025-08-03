@@ -19,7 +19,7 @@ struct ResultsPageView: View {
                 .padding(.bottom, Constants.buttonBottomPadding)
                 .padding(.top, Constants.buttonTopPadding)
         }
-        .background(.dQwhite)
+        .background(Color.DQwhite)
         .clipShape(RoundedRectangle(cornerRadius: Constants.cardRadius))
     }
 }

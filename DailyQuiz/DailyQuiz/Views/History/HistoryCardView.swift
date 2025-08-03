@@ -25,7 +25,7 @@ struct HistoryCardView: View {
                 .padding(.horizontal, Constants.filtersHorizontalPadding)
                 .padding(.bottom, Constants.filtersBottomPadding)
         }
-        .background(Color.dQwhite)
+        .background(Color.DQwhite)
         .clipShape(RoundedRectangle(cornerRadius: 40))
         
     }
@@ -36,7 +36,7 @@ struct HistoryCardView: View {
         HStack(spacing: 0) {
             Text(historyItem.name ?? "Quiz")
                 .font(AppFontInter.bold.size(24))
-                .foregroundStyle(.dQdarkPurple)
+                .foregroundStyle(Color.DQdarkPurple)
             
             Spacer()
             

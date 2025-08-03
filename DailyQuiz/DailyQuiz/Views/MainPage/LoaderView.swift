@@ -19,7 +19,7 @@ struct LoaderView: View {
                 width: width,
                 height: height
             )
-            .foregroundStyle(.dQwhite)
+            .foregroundStyle(Color.DQwhite)
             .rotationEffect(.degrees(isRotating ? 360 : 0))
             .animation(
                 .linear(duration: 3)

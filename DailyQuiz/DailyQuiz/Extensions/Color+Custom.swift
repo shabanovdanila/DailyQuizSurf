@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//Custom Colors
 extension Color {
     static let DQdarkPurple = Color("DQdarkPurple")
     static let DQgray = Color("DQgray")

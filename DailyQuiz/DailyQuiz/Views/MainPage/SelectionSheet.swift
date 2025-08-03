@@ -29,7 +29,7 @@ struct SelectionSheet: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
                     .font(AppFontInter.bold.size(24))
-                    .foregroundStyle(.dQdarkPurple)
+                    .foregroundStyle(Color.DQdarkPurple)
                     .padding(.top, Constants.titleTopPadding)
                     .padding(.horizontal, Constants.titleHorizontalPadding)
                 LazyVStack(alignment: .leading, spacing: Constants.linesTopPadding) {
@@ -43,13 +43,13 @@ struct SelectionSheet: View {
                                     .font(selectedItem == item ?
                                           AppFontInter.bold.size(16) :
                                             AppFontInter.regular.size(16))
-                                    .foregroundStyle(.dQdarkPurple)
+                                    .foregroundStyle(Color.DQdarkPurple)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 
                                 if selectedItem == item {
                                     Image("check_mark_icon")
                                         .frame(width: Constants.checkmarkSize, height: Constants.checkmarkSize)
-                                        .foregroundColor(.dQpurple)
+                                        .foregroundColor(Color.DQpurple)
                                 }
                             }
                             .padding(.horizontal, Constants.titleHorizontalPadding)
@@ -60,7 +60,7 @@ struct SelectionSheet: View {
                 }
                 .padding(.top, Constants.firstLineTopPadding)
             }
-            .background(Color.dQwhite)
+            .background(Color.DQwhite)
             .presentationDetents([.height(calculateSheetHeight())])
             .presentationDragIndicator(.visible)
         }

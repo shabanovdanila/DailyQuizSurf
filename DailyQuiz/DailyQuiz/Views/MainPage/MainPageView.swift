@@ -31,7 +31,7 @@ struct MainPageView: View {
     //MARK: - body
     var body: some View {
         ZStack(alignment: .top) {
-            Color.dQpurple.ignoresSafeArea()
+            Color.DQpurple.ignoresSafeArea()
             if shouldShowBackButton {
                 VStack {
                     HStack {
@@ -57,7 +57,7 @@ struct MainPageView: View {
                 Image("logo_dq")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(.dQwhite)
+                    .foregroundStyle(Color.DQwhite)
                     .frame(
                         width: isLogoSmall ? Constants.logoSmallSize.width : Constants.logoLargeSize.width,
                         height: isLogoSmall ? Constants.logoSmallSize.height : Constants.logoLargeSize.height
@@ -176,7 +176,7 @@ struct MainPageView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: Constants.backButtonSize, height: Constants.backButtonSize)
-                .foregroundColor(.dQwhite)
+                .foregroundColor(Color.DQwhite)
                 .opacity(shouldShowBackButton ? 1 : 0)
         }
         .disabled(!shouldShowBackButton)
@@ -215,7 +215,7 @@ struct MainPageView: View {
     private var tryAgainText: some View {
         Text("Ошибка! Попробуйте ещё раз")
             .font(AppFontInter.bold.size(20))
-            .foregroundStyle(.dQwhite)
+            .foregroundStyle(Color.DQwhite)
             .padding(.top, 24)
     }
     
@@ -228,7 +228,7 @@ struct MainPageView: View {
                 HStack(spacing: 0) {
                     Text("История")
                         .font(AppFontInter.semiBold.size(12))
-                        .foregroundStyle(.dQpurple)
+                        .foregroundStyle(Color.DQpurple)
                     
                     Image("history_icon")
                         .resizable()
@@ -237,11 +237,11 @@ struct MainPageView: View {
                             width: Constants.historyIconSize,
                             height: Constants.historyIconSize
                         )
-                        .foregroundStyle(.dQpurple)
+                        .foregroundStyle(Color.DQpurple)
                         .padding(.leading, Constants.historyIconLeadingPadding)
                 }
                 .padding(Constants.historyButtonPadding)
-                .background(.dQwhite)
+                .background(Color.DQwhite)
                 .clipShape(RoundedRectangle(
                     cornerRadius: Constants.historyButtonCornerRadius
                 ))
@@ -263,14 +263,14 @@ struct MainPageView: View {
                 Button(action: startQuiz) {
                     Text("НАЧАТЬ ВИКТОРИНУ")
                         .font(AppFontInter.black.size(16))
-                        .foregroundStyle(.dQwhite)
+                        .foregroundStyle(Color.DQwhite)
                         .padding(
                             .vertical, Constants.buttonVerticalPadding
                         )
                         .padding(
                             .horizontal, Constants.buttonHorizontalPadding
                         )
-                        .background(Color.dQpurple)
+                        .background(Color.DQpurple)
                         .clipShape(RoundedRectangle(
                             cornerRadius: Constants.buttonCornerRadius
                         ))
@@ -279,7 +279,7 @@ struct MainPageView: View {
                 .padding(.bottom, Constants.buttonBottomPadding)
             }
             .frame(maxWidth: .infinity)
-            .background(Color.dQwhite)
+            .background(Color.DQwhite)
             .clipShape(RoundedRectangle(
                 cornerRadius: Constants.welcomeViewCornerRadius
             ))

@@ -40,7 +40,7 @@ struct ToastDeletedView: View {
                 .padding(.bottom, Constants.buttonBottomPadding)
                 .padding(.top, Constants.buttonTopPadding)
         }
-        .background(.dQwhite)
+        .background(Color.DQwhite)
         .clipShape(RoundedRectangle(cornerRadius: 46))
     }
 }
@@ -53,11 +53,11 @@ private struct okButton: View {
                 Spacer()
                 Text("Хорошо")
                     .font(AppFontInter.black.size(16))
-                    .foregroundStyle(.dQwhite)
+                    .foregroundStyle(Color.DQwhite)
                     .padding(.vertical, 15.5)
                 Spacer()
             }
-            .background(.dQpurple)
+            .background(Color.DQpurple)
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }

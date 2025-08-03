@@ -48,7 +48,7 @@ private struct CardView: View {
         HStack(spacing: 0) {
             Text("Вопрос \(numberOfQuestion) из 5")
                 .font(AppFontInter.bold.size(16))
-                .foregroundStyle(.dQgray)
+                .foregroundStyle(Color.DQgray)
             Spacer()
             Image(isCorrect ? "rb_right" : "rb_wrong")
                 .resizable()
@@ -111,13 +111,13 @@ private struct AnswersView: View {
     }
     private func getStrokeColor(for answer: String) -> Color {
         if (answer == userAnswer && isCorrect) {
-            return .dQgreen
+            return .DQgreen
         } else if (answer == userAnswer && !isCorrect) {
-            return .dQred
+            return .DQred
         }
         return .clear
     }
     private func getBackgroundColor(for answer: String) -> Color {
-        return userAnswer == answer ? .dQwhite : .dQgrayWhite
+        return userAnswer == answer ? .DQwhite : .DQgrayWhite
     }
 }

@@ -24,7 +24,7 @@ struct HistoryDetailView: View {
     
     var body: some View {
         ZStack {
-            Color.dQpurple
+            Color.DQpurple
                 .ignoresSafeArea()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
@@ -46,7 +46,7 @@ struct HistoryDetailView: View {
                     ResultsView(resultScore: Int(quiz.score))
                         .padding(.bottom, Constants.resultInBottomPadding)
                         .frame(maxWidth: .infinity)
-                        .background(.dQwhite)
+                        .background(Color.DQwhite)
                         .clipShape(RoundedRectangle(cornerRadius: Constants.resultRadius))
                         .padding(.top, Constants.resultTopPadding)
                         .padding(.horizontal, Constants.resultHorizontalPadding)
@@ -70,23 +70,23 @@ struct HistoryDetailView: View {
     private var title: some View {
         Text("Результаты")
             .font(AppFontInter.black.size(32))
-            .foregroundStyle(.dQwhite)
+            .foregroundStyle(Color.DQwhite)
     }
     private var categoryAndDiff: some View {
         VStack(spacing: Constants.categorySpacing) {
             Text("Категория: \(quiz.category ?? "Неизвестно")")
                 .font(AppFontInter.regular.size(16))
-                .foregroundStyle(.dQwhite)
+                .foregroundStyle(Color.DQwhite)
                 .multilineTextAlignment(.center)
             Text("Сложность: \(quiz.difficulty ?? "Неизвестно")")
                 .font(AppFontInter.regular.size(16))
-                .foregroundStyle(.dQwhite)
+                .foregroundStyle(Color.DQwhite)
         }
     }
     private var textYourAnswer: some View {
         Text("Твои ответы")
             .font(AppFontInter.black.size(32))
-            .foregroundStyle(.dQwhite)
+            .foregroundStyle(Color.DQwhite)
     }
     private var listOfQuestions: some View {
         VStack(spacing: Constants.cardsSpacing) {
@@ -97,7 +97,7 @@ struct HistoryDetailView: View {
                 )
                 .padding(.horizontal, Constants.cardsInHorizontalPadding)
                 .padding(.vertical, Constants.cardsInVerticalPadding)
-                .background(.dQwhite)
+                .background(Color.DQwhite)
                 .clipShape(RoundedRectangle(cornerRadius: Constants.cardsRadius))
             }
         }
@@ -108,10 +108,10 @@ struct HistoryDetailView: View {
         }) {
             Text("НАЧАТЬ ЗАНОВО")
                 .font(AppFontInter.black.size(16))
-                .foregroundStyle(.dQdarkPurple)
+                .foregroundStyle(Color.DQdarkPurple)
                 .padding(.horizontal, Constants.textAgainButtonHorizontalPadding)
                 .padding(.vertical, Constants.textAgainButtonVerticalPadding)
-                .background(.dQwhite)
+                .background(Color.DQwhite)
                 .clipShape(RoundedRectangle(cornerRadius: Constants.againRadius))
         }
     }

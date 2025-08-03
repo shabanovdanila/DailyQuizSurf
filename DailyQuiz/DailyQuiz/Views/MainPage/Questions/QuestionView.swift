@@ -61,7 +61,7 @@ struct QuestionView: View {
                 .padding(.bottom, Constants.nextBottomPadding)
                 .padding(.horizontal, Constants.nextHorizontalPadding)
             }
-            .background(Color.dQwhite)
+            .background(Color.DQwhite)
             .clipShape(RoundedRectangle(cornerRadius: 46))
             
             bottomText
@@ -80,7 +80,7 @@ struct QuestionView: View {
         VStack(spacing: 0) {
             Text("Вопрос \(num) из 5")
                 .font(AppFontInter.bold.size(16))
-                .foregroundStyle(.dQlightPurple)
+                .foregroundStyle(Color.DQlightPurple)
             Text(text)
                 .multilineTextAlignment(.center)
                 .font(AppFontInter.semiBold.size(18))
@@ -96,7 +96,7 @@ struct QuestionView: View {
     private var bottomText: some View {
         Text("Вернуться к предыдущим вопросам нельзя")
             .font(AppFontInter.regular.size(10))
-            .foregroundStyle(.dQwhite)
+            .foregroundStyle(Color.DQwhite)
     }
     private func checkAnswerAndProceed() {
         guard !showTimeoutToast else { return }
@@ -178,18 +178,18 @@ private struct AnswersView: View {
     }
     
     private func getBackgroundColor(for answer: String) -> Color {
-        return selectedAnswer == answer ? .dQwhite : .dQgrayWhite
+        return selectedAnswer == answer ? .DQwhite : .DQgrayWhite
     }
     
     private func getBorderColor(for answer: String) -> Color {
         if showAnswerFeedback {
             if answer == selectedAnswer && selectedAnswer == correctAnswer {
-                return .dQgreen
+                return .DQgreen
             } else if answer == selectedAnswer && answer != correctAnswer {
-                return .dQred
+                return .DQred
             }
         }
-        return selectedAnswer == answer ? .dQdarkPurple : .clear
+        return selectedAnswer == answer ? .DQdarkPurple : .clear
     }
 }
 
@@ -208,21 +208,21 @@ private struct NextButton: View {
                     Spacer()
                     Text("ЗАВЕРШИТЬ")
                         .font(AppFontInter.black.size(16))
-                        .foregroundStyle(.dQwhite)
+                        .foregroundStyle(Color.DQwhite)
                         .padding(.vertical, Constants.nextTextVerticalPadding)
                     Spacer()
                 }
-                .background(isAnswerSelected ? Color.dQpurple : Color.dQgray)
+                .background(isAnswerSelected ? Color.DQpurple : Color.DQgray)
             } else {
                 HStack {
                     Spacer()
                     Text("ДАЛЕЕ")
                         .font(AppFontInter.black.size(16))
-                        .foregroundStyle(.dQwhite)
+                        .foregroundStyle(Color.DQwhite)
                         .padding(.vertical, Constants.nextTextVerticalPadding)
                     Spacer()
                 }
-                .background(isAnswerSelected ? Color.dQpurple : Color.dQgray)
+                .background(isAnswerSelected ? Color.DQpurple : Color.DQgray)
             }
         }
         .disabled(!isAnswerSelected || needDisable)

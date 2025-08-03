@@ -20,7 +20,7 @@ struct HistoryPageView: View {
     
     var body: some View {
         ZStack {
-            Color.dQpurple
+            Color.DQpurple
                 .ignoresSafeArea()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
@@ -77,7 +77,7 @@ struct HistoryPageView: View {
     private var title: some View {
         Text("История")
             .font(AppFontInter.black.size(32))
-            .foregroundStyle(.dQwhite)
+            .foregroundStyle(Color.DQwhite)
     }
     
     private struct ListCardsView: View {
@@ -129,14 +129,14 @@ struct HistoryPageView: View {
                 Button(action: action) {
                     Text("НАЧАТЬ ВИКТОРИНУ")
                         .font(AppFontInter.black.size(16))
-                        .foregroundStyle(.dQwhite)
+                        .foregroundStyle(Color.DQwhite)
                         .padding(
                             .vertical, Constants.nextButtonTextVerticalPadding
                         )
                         .padding(
                             .horizontal, Constants.nextButtonTextHorizontalPadding
                         )
-                        .background(Color.dQpurple)
+                        .background(Color.DQpurple)
                         .clipShape(RoundedRectangle(
                             cornerRadius: Constants.nextButtonCornerRadius
                         ))
@@ -145,7 +145,7 @@ struct HistoryPageView: View {
                 .padding(.bottom, Constants.nextButtonBottomPadding)
             }
             .frame(maxWidth: .infinity)
-            .background(.dQwhite)
+            .background(Color.DQwhite)
             .clipShape(RoundedRectangle(cornerRadius: 46))
         }
     }

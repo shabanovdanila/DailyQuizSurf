@@ -95,17 +95,17 @@ struct FiltersView: View {
                     if (selectedCategory != nil && selectedDifficulty != nil) {
                         Text("НАЧАТЬ ВИКТОРИНУ")
                             .font(AppFontInter.black.size(16))
-                            .foregroundStyle(.dQwhite)
+                            .foregroundStyle(Color.DQwhite)
                             .padding(.horizontal, Constants.nextButtonTextEnabledHorizontalPadding)
                             .padding(.vertical, Constants.nextButtonTextVerticalPadding)
-                            .background(Color.dQpurple)
+                            .background(Color.DQpurple)
                     } else {
                         Text("ДАЛЕЕ")
                             .font(AppFontInter.black.size(16))
-                            .foregroundStyle(.dQwhite)
+                            .foregroundStyle(Color.DQwhite)
                             .padding(.horizontal, Constants.nextButtonTextDisabledHorizontalPadding)
                             .padding(.vertical, Constants.nextButtonTextVerticalPadding)
-                            .background(Color.dQgray)
+                            .background(Color.DQgray)
                     }
                 }
                 .disabled(selectedCategory == nil || selectedDifficulty == nil)
@@ -113,7 +113,7 @@ struct FiltersView: View {
                 .padding(.top, Constants.nextButtonTopPadding)
                 .padding(.bottom, Constants.nextButtonBottomPadding)
             }
-            .background(Color.dQwhite)
+            .background(Color.DQwhite)
             .clipShape(RoundedRectangle(cornerRadius: 46))
         }
     }
@@ -129,7 +129,7 @@ struct FiltersView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         Text(text)
                             .font(AppFontInter.bold.size(16))
-                            .foregroundStyle(.dQdarkPurple)
+                            .foregroundStyle(Color.DQdarkPurple)
                         
                         if let selectedValue {
                             Text(selectedValue)
@@ -145,13 +145,13 @@ struct FiltersView: View {
                     Image("right_arrow")
                         .resizable()
                         .scaledToFit()
-                        .foregroundStyle(.dQdarkPurple)
+                        .foregroundStyle(Color.DQdarkPurple)
                         .frame(width: Constants.rightArrowIconSize,
                                height: Constants.rightArrowIconSize)
                         .padding(.trailing, 12)
                         .padding(.vertical, selectedValue != nil ? 22 : 12)
                 }
-                .background(Color.dQgrayWhite)
+                .background(Color.DQgrayWhite)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }

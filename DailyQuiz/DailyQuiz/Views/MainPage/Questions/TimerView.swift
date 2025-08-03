@@ -24,24 +24,24 @@ struct TimerView: View {
             HStack {
                 Text(format(time: timeElapsed))
                     .font(AppFontInter.regular.size(12))
-                    .foregroundStyle(.dQdarkPurple)
+                    .foregroundStyle(Color.DQdarkPurple)
                 
                 Spacer()
                 
                 Text(format(time: totalDuration))
                     .font(AppFontInter.regular.size(12))
-                    .foregroundStyle(.dQdarkPurple)
+                    .foregroundStyle(Color.DQdarkPurple)
             }
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .frame(width: geometry.size.width, height: 8)
-                        .foregroundColor(.dQgray)
+                        .foregroundColor(Color.DQgray)
                     
                     Rectangle()
                         .frame(width: min(progress * geometry.size.width, geometry.size.width),
                                height: 8)
-                        .foregroundColor(.dQdarkPurple)
+                        .foregroundColor(Color.DQdarkPurple)
                         .animation(.linear, value: progress)
                 }
                 .cornerRadius(4)
