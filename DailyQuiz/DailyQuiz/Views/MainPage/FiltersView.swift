@@ -17,8 +17,7 @@ struct FiltersView: View {
     @State private var showingCategorySheet = false
     @State private var showingDifficultySheet = false
     
-    let difficulties = ["easy", "medium", "hard"]
-    
+    let difficulties = QuestionDifficulty.allCases.map { $0.russianName }
     //MARK: - body
     var body: some View {
         VStack(spacing: 0) {
@@ -159,6 +158,7 @@ struct FiltersView: View {
 }
 
 private extension FiltersView {
+    
     //MARK: - Constants Enum
     enum Constants {
         //FiltersCard
