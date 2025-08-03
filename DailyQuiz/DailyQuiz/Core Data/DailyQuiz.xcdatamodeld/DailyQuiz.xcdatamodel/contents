@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="AllAnswers" representedClassName="AllAnswers" syncable="YES" codeGenerationType="class">
+        <attribute name="answerText" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="index" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="question" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuestionResult" inverseName="possibleAnswers" inverseEntity="QuestionResult"/>
+    </entity>
     <entity name="QuestionResult" representedClassName="QuestionResult" syncable="YES" codeGenerationType="class">
+        <attribute name="correctAnswer" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isCorrect" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="questionText" optional="YES" attributeType="String"/>
         <attribute name="userAnswer" optional="YES" attributeType="String"/>
-        <relationship name="quizHistory" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuizHistory" inverseName="questionResults" inverseEntity="QuizHistory"/>
+        <relationship name="possibleAnswers" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="AllAnswers" inverseName="question" inverseEntity="AllAnswers"/>
+        <relationship name="quizHistory" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuizHistory" inverseName="questions" inverseEntity="QuizHistory"/>
     </entity>
     <entity name="QuizHistory" representedClassName="QuizHistory" syncable="YES" codeGenerationType="class">
         <attribute name="category" optional="YES" attributeType="String"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="difficulty" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="score" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="questionResults" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuestionResult" inverseName="quizHistory" inverseEntity="QuestionResult"/>
+        <relationship name="questions" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="QuestionResult" inverseName="quizHistory" inverseEntity="QuestionResult"/>
     </entity>
 </model>

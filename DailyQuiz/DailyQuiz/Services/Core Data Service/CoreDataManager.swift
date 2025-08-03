@@ -46,23 +46,57 @@ final class CoreDataManager {
     // MARK: - Quiz History Operations
     
     func saveQuizResult(quizData: QuizData) {
+        let context = persistentContainer.viewContext
+        
         let history = QuizHistory(context: context)
-        history.setValue(UUID(), forKey: "id")
-        history.date = Date()
+        history.id = UUID()
+        history.date = quizData.date
+        history.name = generateNextQuizName()
         history.category = quizData.category
         history.difficulty = quizData.difficulty
         history.score = Int16(quizData.score)
         
-        quizData.questions.forEach { question in
-            let result = QuestionResult(context: context)
-            result.setValue(UUID(), forKey: "id")
-            result.questionText = question.text
-            result.userAnswer = question.userAnswer
-            result.isCorrect = question.isCorrect
-            result.quizHistory = history
+        for questionData in quizData.questions {
+            let question = QuestionResult(context: context)
+            question.id = UUID()
+            question.questionText = questionData.text
+            question.userAnswer = questionData.userAnswer
+            question.correctAnswer = questionData.correctAnswer
+            question.isCorrect = questionData.isCorrect
+            
+            // Устанавливаем связь
+            question.quizHistory = history
+            
+            for (index, answer) in questionData.allAnswers.enumerated() {
+                let answerEntity = AllAnswers(context: context)
+                answerEntity.id = UUID()
+                answerEntity.answerText = answer
+                answerEntity.index = Int16(index)
+                answerEntity.question = question
+            }
         }
         
-        saveContext()
+        do {
+            try context.save()
+            print("Данные успешно сохранены")
+        } catch {
+            print("Ошибка сохранения: \(error)")
+        }
+    }
+    
+    private func generateNextQuizName() -> String {
+        let request: NSFetchRequest<QuizHistory> = QuizHistory.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        
+        do {
+            let lastQuiz = try context.fetch(request).first
+            if let lastName = lastQuiz?.name, let lastNumber = Int(lastName.replacingOccurrences(of: "Quiz ", with: "")) {
+                return "Quiz \(lastNumber + 1)"
+            }
+        } catch {
+            print("Error fetching last quiz: \(error)")
+        }
+        return "Quiz 1"
     }
     
     func fetchQuizHistory(limit: Int? = nil) -> [QuizHistory] {
@@ -103,16 +137,18 @@ final class CoreDataManager {
 // MARK: - Data Models
 
 struct QuizData {
+    let name: String?
+    let date: Date
     let category: String
     let difficulty: String
     let score: Int
-    let totalQuestions: Int
-    let questions: [QuestionAnswer]
+    let questions: [QuestionData]
 }
 
-struct QuestionAnswer {
+struct QuestionData {
     let text: String
     let userAnswer: String
+    let allAnswers: [String]
     let correctAnswer: String
     let isCorrect: Bool
 }

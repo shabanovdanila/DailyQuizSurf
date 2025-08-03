@@ -15,7 +15,7 @@ struct ResultsView: View {
     //MARK: - body
     var body: some View {
         VStack(spacing: 0) {
-            StarsView(score: resultScore)
+            StarsView(score: resultScore, starsSpacing: Constants.starsSpacing, starSize: Constants.starSize)
                 .padding(.top, Constants.starsTopPadding)
                 .padding(.horizontal, Constants.starsHorizontalPadding)
             
@@ -66,6 +66,9 @@ private extension ResultsView {
         static let buttonBottomPadding: CGFloat = 32
         static let buttonHorizontalPadding: CGFloat = 30
         static let buttonTextVerticalPadding: CGFloat = 15.5
+        
+        static let starsSpacing: CGFloat = 8
+        static let starSize: CGFloat = 52
     }
     
     enum TitleText: String {

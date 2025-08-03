@@ -25,6 +25,8 @@ final class QuestionViewModel: ObservableObject {
     
     private let questionsAmount: Int = 5
     private var type: QuestionType = .multiple
+    private(set) var currentCategory: String?
+    private(set) var currentDifficulty: String?
     
     init(apiService: TriviaApiService) {
         self.apiService = apiService
@@ -36,6 +38,11 @@ final class QuestionViewModel: ObservableObject {
     
     @MainActor
     func loadQuestions(category: Int? = nil, difficulty: QuestionDifficulty? = nil) async {
+        if let category {
+            self.currentCategory = TriviaCategory.category(id: category)?.name
+        }
+        self.currentDifficulty = difficulty?.rawValue.capitalized
+        
         guard !isLoading else { return }
         
         isLoading = true
@@ -111,5 +118,33 @@ final class QuestionViewModel: ObservableObject {
         error = nil
         shouldCancelTransitions = false
         isLoading = false
+    }
+    
+    func prepareQuizData() -> QuizData {
+        let questions = displayQuestions.enumerated().map { index, question in
+            let userAnswer = index == currentQuestionIndex ? selectedAnswer : nil
+            
+            return QuestionData(
+                text: question.question,
+                userAnswer: userAnswer ?? getRandomIncorrectAnswer(for: question),
+                allAnswers: question.answers,
+                correctAnswer: question.correctAnswer,
+                isCorrect: userAnswer == question.correctAnswer
+            )
+        }
+        return QuizData(
+            name: nil,
+            date: Date(),
+            category: currentCategory ?? "Unknown",
+            difficulty: currentDifficulty ?? "Unknown",
+            score: score,
+            questions: questions
+        )
+    }
+}
+extension QuestionViewModel {
+    private func getRandomIncorrectAnswer(for question: DisplayQuestion) -> String {
+        let incorrectAnswers = question.answers.filter { $0 != question.correctAnswer }
+        return incorrectAnswers.randomElement() ?? "No answer selected"
     }
 }
