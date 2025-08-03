@@ -22,16 +22,27 @@ enum QuestionType: String, Decodable {
 
 // MARK: - Question Difficulty Enum
 
-enum QuestionDifficulty: String, Decodable {
+enum QuestionDifficulty: String, Decodable, CaseIterable {
     case easy = "easy"
     case medium = "medium"
     case hard = "hard"
-    case unknown
+    
+    var russianName: String {
+        switch self {
+        case .easy: return "Низкая"
+        case .medium: return "Средняя"
+        case .hard: return "Сложная"
+        }
+    }
+    
+    static func fromRussian(_ name: String) -> QuestionDifficulty? {
+        return allCases.first { $0.russianName == name }
+    }
     
     init(from decoder: Decoder) throws {
         let сontainer = try decoder.singleValueContainer()
         let diffString = try сontainer.decode(String.self)
-        self = QuestionDifficulty(rawValue: diffString) ?? .unknown
+        self = QuestionDifficulty(rawValue: diffString) ?? .easy
     }
 }
 

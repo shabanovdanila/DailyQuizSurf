@@ -186,7 +186,7 @@ struct MainPageView: View {
         guard let categoryName = selectedCategory,
               let category = TriviaCategory.category(byName: categoryName),
               let difficultyName = selectedDifficulty,
-              let difficulty = QuestionDifficulty(rawValue: difficultyName.lowercased()) else { return }
+              let difficulty = QuestionDifficulty.fromRussian(difficultyName) else { return }
         questionViewModel.resetQuiz()
         Task {
             await questionViewModel.loadQuestions(category: category.id, difficulty: difficulty)
