@@ -16,9 +16,7 @@ DailyQuiz приложение по прохождению викторин на
 - CoreDataManager - Singleton-класс отвечает за работу с Core Data.
 - Сохраняет историю викторины saveQuizResult().
 - Получает данные fetchQuizHistory(), fetchQuestions().
-  
-**Многопоточность:** async/await
-  
+
 **Навигация:** NavigationStack + navigationDestination with routes
 - NavigationManager + AppRouteEnum отвечают за навигацию между экранами
 - Главный экран меняет контент через ContentStateEnum
