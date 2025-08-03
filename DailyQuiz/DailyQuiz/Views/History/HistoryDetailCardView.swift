@@ -53,7 +53,7 @@ private struct CardView: View {
             numAndCheckMark
             questionText
                 .padding(.top, Constants.questionTextTopPadding)
-            AnswersView(answers: answers, userAnswer: userAnswer, isCorrect: isCorrect)
+            AnswersViewHistory(answers: answers, userAnswer: userAnswer, isCorrect: isCorrect)
                 .padding(.top, Constants.answersViewTopPadding)
         }
     }
@@ -100,9 +100,9 @@ private struct CardView: View {
     
 }
 
-// MARK: - AnswersView
+// MARK: - AnswersViewHistory
 
-private struct AnswersView: View {
+private struct AnswersViewHistory: View {
     
     // MARK: - Properties
     

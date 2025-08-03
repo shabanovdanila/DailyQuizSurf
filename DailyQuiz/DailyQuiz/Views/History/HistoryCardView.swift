@@ -77,7 +77,9 @@ struct HistoryCardView: View {
         .foregroundStyle(.black)
     }
 }
+
 // MARK: - Constants
+
 private extension HistoryCardView {
     enum Constants {
         // Stars

@@ -7,9 +7,17 @@
 
 import SwiftUI
 
+// MARK: - ResultsPageView
+
 struct ResultsPageView: View {
+    
+    // MARK: - Properties
+    
     let resultScore: Int
     let action: () -> Void
+    
+    // MARK: - body
+    
     var body: some View {
         VStack(spacing: 0) {
             ResultsView(resultScore: resultScore)
@@ -24,8 +32,9 @@ struct ResultsPageView: View {
     }
 }
 
+// MARK: - ResultsPageView Extension
+
 private extension ResultsPageView {
-    //MARK: - Constants enum
     enum Constants {
         static let cardRadius: CGFloat = 46
         //Button

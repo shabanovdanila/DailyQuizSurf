@@ -32,7 +32,7 @@ enum QuestionDifficulty: String, Decodable, CaseIterable {
         switch self {
         case .easy: return "Низкая"
         case .medium: return "Средняя"
-        case .hard: return "Сложная"
+        case .hard: return "Высокая"
         case .unknown: return "Неизвестно"
         }
     }

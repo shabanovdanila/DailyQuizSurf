@@ -7,19 +7,19 @@
 
 import SwiftUI
 
+// MARK: - StarsView
+
 struct StarsView: View {
-    //MARK: - Constants Enum
-    private enum Constants {
-        static let starsSpacing: CGFloat = 8
-        static let starSize: CGFloat = 52
-    }
     
     //MARK: - Properties
+    
     let score: Int
-    let maxScore: Int = 5
+    let maxScore: Int = Constants.maxScore
     let starsSpacing: CGFloat
     let starSize: CGFloat
+    
     //MARK: - body
+    
     var body: some View {
         HStack(spacing: Constants.starsSpacing) {
             ForEach(0..<maxScore, id: \.self) { index in
@@ -29,5 +29,15 @@ struct StarsView: View {
                     .frame(width: starSize, height: starSize)
             }
         }
+    }
+}
+
+// MARK: - StarsView Extension
+
+private extension StarsView {
+    enum Constants {
+        static let starsSpacing: CGFloat = 8
+        static let starSize: CGFloat = 52
+        static let maxScore: Int = 5
     }
 }

@@ -7,28 +7,24 @@
 
 import SwiftUI
 
+// MARK: - SelectionSheet
+
 struct SelectionSheet: View {
     
-    private enum Constants {
-        static let titleTopPadding: CGFloat = 25
-        static let titleHorizontalPadding: CGFloat = 16.5
-        static let firstLineTopPadding: CGFloat = 25
-        static let linesTopPadding: CGFloat = 30
-        static let bottomPadding: CGFloat = 20
-        static let cornerRadius: CGFloat = 35
-        static let checkmarkSize: CGFloat = 26
-    }
-    
+    // MARK: - Properties
+
     let title: String
     let items: [String]
     @Binding var selectedItem: String?
     @Environment(\.dismiss) var dismiss
     
+    // MARK: - body
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
-                    .font(AppFontInter.bold.size(24))
+                    .font(AppFontInter.bold.size(Constants.titleTextSize))
                     .foregroundStyle(Color.DQdarkPurple)
                     .padding(.top, Constants.titleTopPadding)
                     .padding(.horizontal, Constants.titleHorizontalPadding)
@@ -41,8 +37,8 @@ struct SelectionSheet: View {
                             HStack(spacing: 0) {
                                 Text(item)
                                     .font(selectedItem == item ?
-                                          AppFontInter.bold.size(16) :
-                                            AppFontInter.regular.size(16))
+                                          AppFontInter.bold.size(Constants.itemTextSize) :
+                                            AppFontInter.regular.size(Constants.itemTextSize))
                                     .foregroundStyle(Color.DQdarkPurple)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 
@@ -66,6 +62,8 @@ struct SelectionSheet: View {
         }
     }
     
+    // MARK: - Private Methods
+    
     private func calculateSheetHeight() -> CGFloat {
         let titleBlockHeight: CGFloat = 24 + Constants.firstLineTopPadding
         let itemsHeight = CGFloat(items.count) * (16 + Constants.linesTopPadding)
@@ -73,5 +71,22 @@ struct SelectionSheet: View {
         let bottomPadding: CGFloat = Constants.bottomPadding
         
         return titleBlockHeight + itemsHeight + lastItemPadding + bottomPadding
+    }
+}
+
+// MARK: - SelectionSheet Extension
+
+private extension SelectionSheet {
+    enum Constants {
+        static let titleTextSize: CGFloat = 24
+        static let itemTextSize: CGFloat = 16
+        
+        static let titleTopPadding: CGFloat = 25
+        static let titleHorizontalPadding: CGFloat = 16.5
+        static let firstLineTopPadding: CGFloat = 25
+        static let linesTopPadding: CGFloat = 30
+        static let bottomPadding: CGFloat = 20
+        static let cornerRadius: CGFloat = 35
+        static let checkmarkSize: CGFloat = 26
     }
 }
