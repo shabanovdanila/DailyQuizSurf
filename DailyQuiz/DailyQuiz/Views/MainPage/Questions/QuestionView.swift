@@ -27,7 +27,7 @@ struct QuestionView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
-                TimerView(onTimeout: {
+                TimerView(shouldStopTimer: $shouldStopTimer, onTimeout: {
                     if !showTimeoutToast {
                         withAnimation {
                             showTimeoutToast = true

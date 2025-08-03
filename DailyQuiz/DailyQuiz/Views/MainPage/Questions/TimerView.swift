@@ -14,18 +14,19 @@ import SwiftUI
 struct TimerView: View {
     
     // MARK: - Properties
-
-    private let totalDuration: TimeInterval = 10
+    
+    private let totalDuration: TimeInterval = 30
     private let timer = Timer.publish(every: timerStep, on: .main, in: .common).autoconnect()
     
     @State private var progress = 0.0
     @State private var timeElapsed = 0.0
     @State private var finished = false
+    @Binding var shouldStopTimer: Bool
     
     var onTimeout: (() -> Void)?
     
     // MARK: - body
-
+    
     var body: some View {
         VStack(spacing: 8) {
             HStack {
@@ -55,6 +56,11 @@ struct TimerView: View {
             }
             .frame(height: Constants.height)
         }.onReceive(timer) { _ in
+            if shouldStopTimer {
+                timer.upstream.connect().cancel()
+                return
+            }
+            
             if timeElapsed < totalDuration {
                 timeElapsed += timerStep
                 progress = timeElapsed / totalDuration
@@ -64,11 +70,14 @@ struct TimerView: View {
                 finished = true
             }
         }
+        .onChange(of: shouldStopTimer) {
+            timer.upstream.connect().cancel()
+        }
     }
     
     
     // MARK: - Private Methods
-
+    
     private func format(time: Double) -> String {
         let elapsedMinutes = Int(time) / 60
         let elapsedSeconds = Int(time) % 60
